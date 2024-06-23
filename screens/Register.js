@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { icons } from "../constants";
 import { launchImageLibrary } from 'react-native-image-picker';
+import axios from 'axios';
 
 const Register = ({ navigation }) => {
   const [name, setUsername] = useState('');
@@ -84,13 +85,25 @@ const Register = ({ navigation }) => {
 
   const validateEmail = (email) => /\S+@gmail\.com/.test(email);
 
-  const handleSign = () => {
+  const handleSign = async () => {
     if (validateForm()) {
-      console.log('Name:', name);
-      console.log('Password:', password);
-      console.log('Email:', email);
-      // Registration logic goes here
-      navigation.navigate('Dashboard');
+      try {
+        const response = await axios.post('http://192.168.10.9:8000/api/register', {
+          name: name,
+          email: email,
+          password: password,
+          password_confirmation: confirmPassword,
+        });
+
+        if (response.status === 201) {
+          console.log('Registration successful:', response.data);
+          // navigation.navigate('Dashboard');
+        } else {
+          console.log('Registration failed:', response.data);
+        }
+      } catch (error) {
+        console.error('Error registering user:', error.response ? error.response.data : error.message);
+      }
     }
   };
 
