@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
-import { useStripe } from '@stripe/stripe-react-native'; // Import Stripe hooks
+import { ScrollView, Button, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { CardField, useStripe } from '@stripe/stripe-react-native';
 import { icons } from "../constants"; // Assuming you have icons imported
 
 const AddressForm = ({ navigation, route }) => {
   const { cartItems, totalPrice } = route.params; // Extracting params from navigation route
-  const { createPaymentSheet, presentPaymentSheet } = useStripe(); // Stripe hooks
+  const [cardDetails, setCardDetails] = useState(null);
+  const { confirmPayment } = useStripe();
 
   const [email, setEmail] = useState('');
   const [phone_number, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCVC] = useState('');
   const [error, setError] = useState('');
 
   const handlePhoneNumberChange = (text) => {
@@ -27,30 +25,13 @@ const AddressForm = ({ navigation, route }) => {
     setEmail(text.trim());
   };
 
-  const handleCardNumberChange = (text) => {
-    setCardNumber(text.trim());
-  };
-
-  const handleExpiryChange = (text) => {
-    // Format the text to MM/YY format
-    let formattedText = text.replace(/\D/g, '');
-    if (formattedText.length > 2) {
-      formattedText = formattedText.slice(0, 2) + '/' + formattedText.slice(2);
-    }
-    setExpiry(formattedText);
-  };
-
-  const handleCVCChange = (text) => {
-    setCVC(text.trim());
-  };
-
   const validatePhoneNumber = (phone_number) => {
     const regex = /^[0-9]{11}$/;
     return regex.test(phone_number);
   };
 
   const validateForm = () => {
-    if (!email.trim() || !phone_number.trim() || !address.trim() || !cardNumber.trim() || !expiry.trim() || !cvc.trim()) {
+    if (!email.trim() || !phone_number.trim() || !address.trim()) {
       setError('All fields must be filled.');
       return false;
     } else if (!validatePhoneNumber(phone_number)) {
@@ -61,28 +42,34 @@ const AddressForm = ({ navigation, route }) => {
   };
 
   const handlePayment = async () => {
+    console.log(totalPrice);
     if (validateForm()) {
-      // Initialize the PaymentSheet
-      try {
-        const { error } = await createPaymentSheet({
-          paymentIntentClientSecret: 'your_payment_intent_client_secret', // Replace with your actual client secret
-        });
-        if (error) {
-          console.log('Error initializing PaymentSheet:', error);
-          return;
-        }
-
-        // Present the PaymentSheet
-        const { error: paymentError } = await presentPaymentSheet();
-        if (paymentError) {
-          console.log('Error presenting PaymentSheet:', paymentError);
-        } else {
-          console.log('Payment successful!');
-          // Handle navigation or other actions after successful payment
-          navigation.navigate('PaymentSuccess'); // Example navigation to success screen
-        }
-      } catch (e) {
-        console.log('Error:', e);
+      if (!cardDetails?.complete) {
+        console.log('Please fill out the card details');
+        return;
+      }
+      
+      // Fetch the payment intent client secret from your backend
+      const response = await fetch('http://192.168.10.11:8000/api/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: totalPrice * 100 }), // Example amount
+      });
+  
+      const { clientSecret } = await response.json();
+  
+      const { error, paymentIntent } = await confirmPayment(clientSecret, {
+        type: 'Card',
+        paymentMethodType: 'Card',
+        billingDetails: {  },
+      });
+  
+      if (error) {
+        console.log('Payment confirmation error', error);
+      } else if (paymentIntent) {
+        console.log('Payment successful', paymentIntent);
       }
     }
   };
@@ -139,7 +126,14 @@ const AddressForm = ({ navigation, route }) => {
             />
             <Image source={icons.loc} style={styles.email} />
           </View>
-
+      <CardField
+        postalCodeEnabled={false}
+        placeholders={{ number: '4242 4242 4242 4242' }}
+        cardStyle={styles.card}
+        style={styles.cardContainer}
+        onCardChange={(cardDetails) => setCardDetails(cardDetails)}
+      />
+{/* 
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -150,7 +144,7 @@ const AddressForm = ({ navigation, route }) => {
               keyboardType="numeric"
               secureTextEntry
             />
-            {/* Add Visa icon here */}
+
             <Image source={icons.visa} style={styles.icon} />
           </View>
 
@@ -178,7 +172,7 @@ const AddressForm = ({ navigation, route }) => {
               />
               <Image source={icons.cvv} style={styles.icon} />
             </View>
-          </View>
+          </View> */}
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -277,6 +271,19 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     // marginLeft: 10,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    textColor: '#000000',
+    borderWidth: 2,
+    borderColor: 'black',
+  },
+  cardContainer: {
+    height: 50,
+    marginVertical: 30,
+    backgroundColor: 'black',
+    width: '100%',
+    borderWidth: 2,
   },
 });
 
