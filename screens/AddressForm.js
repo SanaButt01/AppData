@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { icons } from "../constants";
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { useStripe } from '@stripe/stripe-react-native'; // Import Stripe hooks
+import { icons } from "../constants"; // Assuming you have icons imported
 
 const AddressForm = ({ navigation, route }) => {
   const { cartItems, totalPrice } = route.params; // Extracting params from navigation route
+  const { createPaymentSheet, presentPaymentSheet } = useStripe(); // Stripe hooks
 
   const [email, setEmail] = useState('');
   const [phone_number, setPhoneNumber] = useState('');
@@ -29,7 +31,15 @@ const AddressForm = ({ navigation, route }) => {
     setCardNumber(text.trim());
   };
 
-  
+  const handleExpiryChange = (text) => {
+    // Format the text to MM/YY format
+    let formattedText = text.replace(/\D/g, '');
+    if (formattedText.length > 2) {
+      formattedText = formattedText.slice(0, 2) + '/' + formattedText.slice(2);
+    }
+    setExpiry(formattedText);
+  };
+
   const handleCVCChange = (text) => {
     setCVC(text.trim());
   };
@@ -49,53 +59,43 @@ const AddressForm = ({ navigation, route }) => {
     }
     return true;
   };
-  const handleExpiryChange = (text) => {
-    // Remove non-numeric characters
-    let formattedText = text.replace(/\D/g, '');
-  
-    // Format the text to MM/YY format
-    if (formattedText.length > 2) {
-      formattedText = formattedText.slice(0, 2) + '/' + formattedText.slice(2);
-    }
-  
-    // Update state with formatted text
-    setExpiry(formattedText);
-  };
-  
-  const handleForm = () => {
+
+  const handlePayment = async () => {
     if (validateForm()) {
-      console.log('Email:', email);
-      console.log('Phone Number:', phone_number);
-      console.log('Address:', address);
-      console.log('Card Number:', cardNumber);
-      console.log('Expiry:', expiry);
-      console.log('CVC:', cvc);
-      console.log('Total Price:', totalPrice);
-      console.log('Cart Items:', cartItems);
-      setError('');
-  
-      // Perform actions after successful form validation (e.g., submit payment, navigate to next screen)
-      // For now, let's simulate an order confirmation:
-      alert('Order Done!'); // Display a message indicating the order is done
+      // Initialize the PaymentSheet
+      try {
+        const { error } = await createPaymentSheet({
+          paymentIntentClientSecret: 'your_payment_intent_client_secret', // Replace with your actual client secret
+        });
+        if (error) {
+          console.log('Error initializing PaymentSheet:', error);
+          return;
+        }
+
+        // Present the PaymentSheet
+        const { error: paymentError } = await presentPaymentSheet();
+        if (paymentError) {
+          console.log('Error presenting PaymentSheet:', paymentError);
+        } else {
+          console.log('Payment successful!');
+          // Handle navigation or other actions after successful payment
+          navigation.navigate('PaymentSuccess'); // Example navigation to success screen
+        }
+      } catch (e) {
+        console.log('Error:', e);
+      }
     }
   };
-  
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.logoContainer}>
-        <Image
-          source={icons.logo2}
-          style={styles.logo}
-        />
-      </View> */}
       <Text style={styles.totalText}>Order Details:</Text>
-          {cartItems.map((item, index) => (
-            <View key={index}>
-              <Text style={styles.sectionTitle}>{item.title}</Text>
-            </View>
-          ))}
-           <Text style={styles.sectionTitle}>Total Price: Rs. {totalPrice}</Text>
+      {cartItems.map((item, index) => (
+        <View key={index}>
+          <Text style={styles.sectionTitle}>{item.title}</Text>
+        </View>
+      ))}
+      <Text style={styles.sectionTitle}>Total Price: Rs. {totalPrice}</Text>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoidingView}
@@ -104,8 +104,7 @@ const AddressForm = ({ navigation, route }) => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-        <View style={styles.inputContainer}>
-       
+          <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -138,7 +137,7 @@ const AddressForm = ({ navigation, route }) => {
               onChangeText={handleAddressChange}
               value={address}
             />
-             <Image source={icons.loc} style={styles.email} />
+            <Image source={icons.loc} style={styles.email} />
           </View>
 
           <View style={styles.inputContainer}>
@@ -156,16 +155,16 @@ const AddressForm = ({ navigation, route }) => {
           </View>
 
           <View style={styles.rowContainer}>
-          <View style={[styles.inputContainer, { width: '50%', marginRight: 2 }]}>
-  <TextInput
-    style={styles.input}
-    placeholder="Expiry(MM/YY)"
-    placeholderTextColor="#888"
-    onChangeText={handleExpiryChange}
-    value={expiry}
-    keyboardType="numeric"
-  />
-</View>
+            <View style={[styles.inputContainer, { width: '50%', marginRight: 2 }]}>
+              <TextInput
+                style={styles.input}
+                placeholder="Expiry(MM/YY)"
+                placeholderTextColor="#888"
+                onChangeText={handleExpiryChange}
+                value={expiry}
+                keyboardType="numeric"
+              />
+            </View>
 
             <View style={[styles.inputContainer, { width: '50%' }]}>
               <TextInput
@@ -177,13 +176,13 @@ const AddressForm = ({ navigation, route }) => {
                 keyboardType="number-pad"
                 secureTextEntry
               />
-                <Image source={icons.cvv} style={styles.icon} />
+              <Image source={icons.cvv} style={styles.icon} />
             </View>
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <TouchableOpacity style={styles.button} onPress={handleForm}>
+          <TouchableOpacity style={styles.button} onPress={handlePayment}>
             <Text style={styles.buttonText}>Pay</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -196,14 +195,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  logo: {
-    height: 50,
-    width: 40,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -244,10 +235,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     fontSize: 14, // Adjust font size for smaller inputs if needed
   },
-  cvcInput: {
-    letterSpacing: 8, // Adjust letterSpacing for CVC
-    textAlign: 'center', // Center the text in the CVC field
-  },
   button: {
     backgroundColor: '#000000',
     width: '80%',
@@ -259,7 +246,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 5,
-    
+    marginBottom: 20,
   },
   buttonText: {
     color: '#FFF',
@@ -279,7 +266,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Bold',
     fontSize: 25,
     marginLeft: 10,
-    
+    marginTop: 20,
   },
   icon: {
     width: 40,
@@ -291,7 +278,6 @@ const styles = StyleSheet.create({
     height: 24,
     // marginLeft: 10,
   },
-
 });
 
 export default AddressForm;
