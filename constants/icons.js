@@ -20,8 +20,16 @@ export const email2 = require("../assets/icons/email2.png");
 export const home = require("../assets/icons/home.png");
 export const camera = require("../assets/icons/camera.png");
 export const backArrow = require("../assets/icons/backArrow.png");
+export const visa = require("../assets/icons/visa.png");
+export const cvv = require("../assets/icons/cvv.png");
+export const loc = require("../assets/icons/loc.png");
+export const phn = require("../assets/icons/phn.png");
 export default {
     page_filled_icon,
+    phn,
+    loc,
+    cvv,
+    visa,
     camera,
     home,
     email2,
