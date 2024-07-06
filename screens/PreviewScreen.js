@@ -1,66 +1,77 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
-import { COLORS, FONTS, SIZES } from "../constants";
+import { COLORS, SIZES } from "../constants";
 import { images } from "../constants"; // Import your image assets
- // PREVIEW SCREEN 
-// Hardcoded previews data
-const previewsData = [
-  {
-    preview_id: 1,
-    content_id: 1,
-    paths: [
-      { im: images.eng1 },
-      { im: images.eng1 },
-      { im: images.eng1 },
-    ],
-    created_at: "2023-01-01",
-    updated_at: "2023-01-01",
-  },
-  {
-    preview_id: 1,
-    content_id: 2,
-    paths: [
-      { im: images.eng2 },
-      { im: images.eng2 },
-      { im: images.eng2 },
-    ],
-    created_at: "2023-01-02",
-    updated_at: "2023-01-02",
-  },
-  {
-    preview_id: 1,
-    content_id: 3,
-    paths: [
-      { im: images.LA },
-      { im: images.LA },
-      { im: images.LA },
-    ],
-    created_at: "2023-01-03",
-    updated_at: "2023-01-03",
-  },
-  {
-    preview_id: 1,
-    content_id: 4,
-    paths: [
-      { im: images.AI },
-      { im: images.AI },
-      { im: images.AI },
-    ],
-    created_at: "2023-01-03",
-    updated_at: "2023-01-03",
-  },
-  // Add more previews as needed
-];
 
 const PreviewScreen = ({ route }) => {
   const { book_id } = route.params;
   const [previews, setPreviews] = useState([]);
 
+  // Hardcoded previews data as useState
+  const [previewsData] = useState([
+    {
+      preview_id: 1,
+      content_id: 1,
+      paths: [
+        { im: images.eng1 },
+        { im: images.eng1 },
+        { im: images.eng1 },
+      ],
+      created_at: "2023-01-01",
+      updated_at: "2023-01-01",
+    },
+    {
+      preview_id: 1,
+      content_id: 2,
+      paths: [
+        { im: images.eng2 },
+        { im: images.eng2 },
+        { im: images.eng2 },
+      ],
+      created_at: "2023-01-02",
+      updated_at: "2023-01-02",
+    },
+    {
+      preview_id: 1,
+      content_id: 3,
+      paths: [
+        { im: images.LA },
+        { im: images.LA },
+        { im: images.LA },
+      ],
+      created_at: "2023-01-03",
+      updated_at: "2023-01-03",
+    },
+    {
+      preview_id: 1,
+      content_id: 4,
+      paths: [
+        { im: images.AI },
+        { im: images.AI },
+        { im: images.AI },
+      ],
+      created_at: "2023-01-03",
+      updated_at: "2023-01-03",
+    },
+    // Add more previews as needed
+  ]);
+
   useEffect(() => {
-   
+    // Filter previews based on book_id when it changes
     const fetchedPreviews = previewsData.filter(item => item.content_id === book_id);
     setPreviews(fetchedPreviews);
-  }, [book_id]);
+    
+    // Replace the hardcoded previewsData with API call below:
+    // fetch(`https://yourapi.com/previews?book_id=${book_id}`)
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     setPreviews(data); // Assuming API returns an array of previews similar to previewsData format
+    //   })
+    //   .catch(error => {
+    //     console.error("Error fetching previews:", error);
+    //     // Handle error case
+    //   });
+  }, [book_id]); // Ensure book_id is in the dependency array
 
   function renderPreviews() {
     if (previews.length === 0) {

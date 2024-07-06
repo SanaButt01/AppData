@@ -1,36 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS, FONTS, SIZES } from "../constants";
-import { booksData } from "./BookScreen"; // Import booksData from BookScreen or wherever it is defined
- // CONTENT SCREEN
+
 const BookDetail = ({ route, navigation }) => {
-  const { book_id } = route.params;
+  const { book_id, booksData } = route.params; // Receive booksData from route params
   const [book, setBook] = useState(null);
   const [content, setContent] = useState(null);
-  const [scrollViewWholeHeight, setScrollViewWholeHeight] = useState(1);
-  const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = useState(0);
-  const contentData = [
-    { book_id: 1, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 10 },
-    { book_id: 2, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 15 },
-    { book_id: 3, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 5 },
-    { book_id: 4, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 5 },
-    // Add more content entries as needed
-  ];
   
+
   useEffect(() => {
     // Convert book_id to number (if necessary, ensure it's in the correct type)
     const parsedBookId = parseInt(book_id);
 
-    // Simulate fetching book details based on the selected book_id from route params
+    // Uncomment the following block and replace with API fetch for book details
+    /*
+    fetch(`https://yourapi.com/books/${parsedBookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setBook(data); // Set the fetched book to state
+        // Assuming the API response structure is similar to fetchedContent below
+        const fetchedContent = {
+          book_id: parsedBookId,
+          description: data.description,
+          price: data.price,
+        };
+        setContent(fetchedContent);
+      })
+      .catch(error => {
+        console.error("Error fetching book details:", error);
+        // Handle error case
+      });
+    */
+
+    // For now, simulate fetching book details based on the selected book_id from route params
     const fetchedBook = booksData.find(item => item.book_id === parsedBookId);
 
     if (fetchedBook) {
       setBook(fetchedBook); // Set the fetched book to state
+
       // For demo purposes, set hardcoded content data for the fetched book
-      const fetchedContent = contentData.find(item => item.book_id === parsedBookId);
-      if (fetchedContent) {
-        setContent(fetchedContent);
-      }
+      const fetchedContent = {
+        book_id: parsedBookId,
+        description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.",
+      };
+      setContent(fetchedContent);
     } else {
       // Handle case where book is not found
       console.log(`Book with id ${parsedBookId} not found.`);
@@ -49,12 +62,9 @@ const BookDetail = ({ route, navigation }) => {
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
-        onContentSizeChange={(width, height) => setScrollViewWholeHeight(height)}
-        onLayout={({ nativeEvent: { layout: { height } } }) => setScrollViewVisibleHeight(height)}
       >
         <Text style={styles.descriptionTitle}>Description</Text>
         <Text style={styles.descriptionText}>{content.description}</Text>
-        <Text style={styles.descriptionTitle}>Price: ${content.price}</Text>
         {/* Additional content details or actions */}
         <TouchableOpacity
           onPress={handleShowPreview}
@@ -74,28 +84,29 @@ const BookDetail = ({ route, navigation }) => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.black }}>
-      <View style={{ flex: 1 }}>{renderBookDescription()}</View>
+    <View style={styles.container}>
+      {renderBookDescription()}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.lightGray4,
+    padding: SIZES.padding * 2,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   descriptionTitle: {
     ...FONTS.h2,
-    color: COLORS.white,
     marginBottom: SIZES.padding,
   },
   descriptionText: {
     ...FONTS.body3,
-    color: COLORS.lightGray,
-    lineHeight: 22,
-    letterSpacing: 0.1,
-    marginBottom: SIZES.padding,
-  },
-  scrollViewContent: {
-    paddingHorizontal: SIZES.padding,
-    paddingTop: SIZES.padding,
+    marginBottom: SIZES.padding * 2,
   },
 });
 

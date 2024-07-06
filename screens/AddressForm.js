@@ -82,7 +82,7 @@ const AddressForm = ({ navigation, route }) => {
           <Text style={styles.sectionTitle}>{item.title}</Text>
         </View>
       ))}
-      <Text style={styles.sectionTitle}>Total Price: Rs. {totalPrice}</Text>
+      <Text style={styles.sectionTitle}>Total Price: Rs.{totalPrice}</Text>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoidingView}

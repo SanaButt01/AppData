@@ -2,40 +2,46 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { icons } from '../constants';
- // CATEGORY SCREEN
+
 const SidePanel = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
- 
-
-  // Hardcoded category data
-  const categories = [
+  const [categories, setCategories] = useState([
     { category_id: 1, type: "Linguistics", icon: require("../assets/images/p1.jpg") },
     { category_id: 2, type: "Computer Science", icon: require("../assets/images/cmp.jpg") },
-
     // Add more categories as needed
-  ];
+  ]);
 
-  const handleCategoryClick = (index) => {
+  // Uncomment the following block and replace with API fetch for categories
+  /*
+  useEffect(() => {
+    fetch('https://yourapi.com/categories')
+      .then(response => response.json())
+      .then(data => {
+        setCategories(data); // Assuming API returns an array of categories similar to the current state format
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
+        // Handle error case
+      });
+  }, []);
+  */
 
-    setSelectedCategory(categories[index].category_id);
-    navigation.navigate('BookScreen', { categoryId: categories[index].category_id });
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId);
+    navigation.navigate('BookScreen', { categoryId });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-
-  
-        <View style={styles.categoryHeaderTextContainer}>
-          <Text style={styles.categoryHeaderText}>Categories</Text>
-        </View>
-  
-
+      <View style={styles.categoryHeaderTextContainer}>
+        <Text style={styles.categoryHeaderText}>Categories</Text>
+      </View>
       <ScrollView contentContainerStyle={styles.categoriesContainer}>
-        {categories.map((category, index) => (
+        {categories.map(category => (
           <TouchableOpacity
             key={category.category_id}
-            onPress={() => handleCategoryClick(index)}
+            onPress={() => handleCategoryClick(category.category_id)}
             style={styles.categoryItem}
           >
             <Image source={category.icon} style={styles.categoryImage} />
@@ -95,21 +101,6 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 15,
     marginBottom: 10,
-  },
-  backButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  backArrow: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
-  },
-  backText: {
-    fontSize: 30,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: 'black',
   },
 });
 

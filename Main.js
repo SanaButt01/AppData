@@ -72,7 +72,7 @@ const CustomDrawerContent = (props) => {
 const DrawerScreens = () => {
     return (
         <Drawer.Navigator
-            initialRouteName={'Dashboard'}
+            initialRouteName={'MyCars'}
             drawerContent={CustomDrawerContent}
             screenOptions={{
                 headerShown: true,
