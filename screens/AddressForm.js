@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, Button, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 import { icons } from "../constants"; // Assuming you have icons imported
+import axios from 'axios';
 
 const AddressForm = ({ navigation, route }) => {
   const { cartItems, totalPrice } = route.params; // Extracting params from navigation route
@@ -50,27 +51,28 @@ const AddressForm = ({ navigation, route }) => {
       }
       
       // Fetch the payment intent client secret from your backend
-      const response = await fetch('http://192.168.10.11:8000/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: totalPrice * 100 }), // Example amount
-      });
-  
-      const { clientSecret } = await response.json();
-  
-      const { error, paymentIntent } = await confirmPayment(clientSecret, {
-        type: 'Card',
-        paymentMethodType: 'Card',
-        billingDetails: {  },
-      });
-  
-      if (error) {
-        console.log('Payment confirmation error', error);
-      } else if (paymentIntent) {
-        console.log('Payment successful', paymentIntent);
-      }
+const response = await axios.post('http://192.168.10.11:8000/api/create-payment-intent', {
+  amount: totalPrice * 100, 
+}, {
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+const { clientSecret } = response.data;
+
+const { error, paymentIntent } = await confirmPayment(clientSecret, {
+  type: 'Card',
+  paymentMethodType: 'Card',
+  billingDetails: {
+  },
+});
+
+if (error) {
+  console.log('Payment confirmation error', error);
+} else if (paymentIntent) {
+  console.log('Payment successful', paymentIntent);
+}
     }
   };
 
