@@ -15,9 +15,10 @@ import BookData from './screens/BookData';
 import FeedBack from './screens/FeedBack';
 import AddressForm from './screens/AddressForm';
 import MyCars from './screens/MyCars';
-import SidePanel from './screens/SidePanel';
+import PreviewScreen from './screens/PreviewScreen'
 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import BookScreen from './screens/BookScreen';
 
 const theme = {
     ...DefaultTheme,
@@ -49,7 +50,8 @@ const App = () => {
               <Stack.Screen name="DrawerScreens" component={DrawerScreens} />
               <Stack.Screen name="AddressForm" component={AddressForm} options={{ headerShown: true }} />
               <Stack.Screen name="BookDetail" component={BookDetail} options={{ headerShown: true }} />
-              <Stack.Screen name="SidePanel" component={SidePanel} />
+              <Stack.Screen name="BookScreen" component={BookScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="PreviewScreen" component={PreviewScreen} options={{ headerShown: true }}/>
           </Stack.Navigator>
       </NavigationContainer>
   </StripeProvider>
@@ -70,7 +72,7 @@ const CustomDrawerContent = (props) => {
 const DrawerScreens = () => {
     return (
         <Drawer.Navigator
-            initialRouteName={'MyCars'}
+            initialRouteName={'Dashboard'}
             drawerContent={CustomDrawerContent}
             screenOptions={{
                 headerShown: true,

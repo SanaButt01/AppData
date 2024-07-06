@@ -1,255 +1,101 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Animated,
-} from "react-native";
-import { FONTS, COLORS, SIZES, icons } from "../constants";
-
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { COLORS, FONTS, SIZES } from "../constants";
+import { booksData } from "./BookScreen"; // Import booksData from BookScreen or wherever it is defined
+ // CONTENT SCREEN
 const BookDetail = ({ route, navigation }) => {
+  const { book_id } = route.params;
   const [book, setBook] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
+  const [content, setContent] = useState(null);
   const [scrollViewWholeHeight, setScrollViewWholeHeight] = useState(1);
   const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = useState(0);
-
-  const indicator = new Animated.Value(0);
-
+  const contentData = [
+    { book_id: 1, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 10 },
+    { book_id: 2, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 15 },
+    { book_id: 3, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 5 },
+    { book_id: 4, description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.", price: 5 },
+    // Add more content entries as needed
+  ];
+  
   useEffect(() => {
-    let { book } = route.params;
-    console.log('Book received:', book); // Debug log
-    setBook(book);
-  }, []);
+    // Convert book_id to number (if necessary, ensure it's in the correct type)
+    const parsedBookId = parseInt(book_id);
 
-  function renderBookInfoSection() {
-    if (!book) return null;
+    // Simulate fetching book details based on the selected book_id from route params
+    const fetchedBook = booksData.find(item => item.book_id === parsedBookId);
 
-    return (
-      <View style={{ flex: 1 }}>
-        {book.path && (
-          <ImageBackground
-            source={book.path}
-            resizeMode="cover"
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          />
-        )}
+    if (fetchedBook) {
+      setBook(fetchedBook); // Set the fetched book to state
+      // For demo purposes, set hardcoded content data for the fetched book
+      const fetchedContent = contentData.find(item => item.book_id === parsedBookId);
+      if (fetchedContent) {
+        setContent(fetchedContent);
+      }
+    } else {
+      // Handle case where book is not found
+      console.log(`Book with id ${parsedBookId} not found.`);
+    }
+  }, [book_id]);
 
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          }}
-        ></View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            paddingHorizontal: SIZES.radius,
-            height: 80,
-            alignItems: "flex-end",
-          }}
-        ></View>
-
-        <View style={{ flex: 5, paddingTop: SIZES.padding2, alignItems: "center" }}>
-          {book.path && (
-            <Image
-              source={book.path}
-              resizeMode="contain"
-              style={{
-                flex: 1,
-                width: 150,
-                height: "auto",
-              }}
-            />
-          )}
-        </View>
-      </View>
-    );
-  }
+  // Function to navigate to PreviewScreen
+  const handleShowPreview = () => {
+    navigation.navigate('PreviewScreen', { book_id: book_id });
+  };
 
   function renderBookDescription() {
-    if (!book) return null;
-  
-    const indicatorSize =
-      scrollViewWholeHeight > scrollViewVisibleHeight
-        ? (scrollViewVisibleHeight * scrollViewVisibleHeight) / scrollViewWholeHeight
-        : scrollViewVisibleHeight;
-  
-    const difference =
-      scrollViewVisibleHeight > indicatorSize
-        ? scrollViewVisibleHeight - indicatorSize
-        : 1;
-  
-    return (
-      <View style={styles.descriptionContainer}>
-        <View style={styles.scrollIndicatorContainer}>
-          <Animated.View
-            style={[
-              styles.scrollIndicator,
-              {
-                height: indicatorSize,
-                transform: [
-                  {
-                    translateY: Animated.multiply(indicator, scrollViewVisibleHeight / scrollViewWholeHeight).interpolate({
-                      inputRange: [0, difference],
-                      outputRange: [0, difference],
-                      extrapolate: "clamp",
-                    }),
-                  },
-                ],
-              },
-            ]}
-          />
-        </View>
-  
-        <ScrollView
-          contentContainerStyle={styles.scrollViewContent}
-          showsVerticalScrollIndicator={false}
-          scrollEventThrottle={16}
-          onContentSizeChange={(width, height) => setScrollViewWholeHeight(height)}
-          onLayout={({ nativeEvent: { layout: { height } } }) => setScrollViewVisibleHeight(height)}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: indicator } } }],
-            { useNativeDriver: false }
-          )}
-        >
-          <Text style={styles.descriptionTitle}>Description</Text>
-          <Text style={styles.descriptionText}>{book.description}</Text>
-        </ScrollView>
-      </View>
-    );
-  }
-  
-
-  function renderPreviewPages() {
-    if (!showPreview || !book || !book.paths) return null;
+    if (!book || !content) return null;
 
     return (
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+        onContentSizeChange={(width, height) => setScrollViewWholeHeight(height)}
+        onLayout={({ nativeEvent: { layout: { height } } }) => setScrollViewVisibleHeight(height)}
+      >
+        <Text style={styles.descriptionTitle}>Description</Text>
+        <Text style={styles.descriptionText}>{content.description}</Text>
+        <Text style={styles.descriptionTitle}>Price: ${content.price}</Text>
+        {/* Additional content details or actions */}
         <TouchableOpacity
-          style={{ marginLeft: SIZES.base}}
-          onPress={() => setShowPreview(false)}
+          onPress={handleShowPreview}
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            marginTop: 20,
+            backgroundColor: COLORS.primary,
+            borderRadius: 10,
+            alignItems: "center",
+          }}
         >
-          <Image
-            source={icons.page_filled_icon}
-            resizeMode="contain"
-            style={{
-              width: 20,
-              height: 30,
-            }}
-          />
+          <Text style={{ color: COLORS.white, ...FONTS.body2 }}>Show Preview</Text>
         </TouchableOpacity>
-        {book.paths.map((page, index) => (
-          <View key={index} style={styles.previewPageContainer}>
-            {page.im && (
-              <Image
-                source={page.im}
-                resizeMode="contain"
-                style={styles.previewPageImage}
-              />
-            )}
-          </View>
-        ))}
       </ScrollView>
     );
   }
 
-  function renderBottomButton() {
-    if (showPreview) return null;
-
-    return (
-      <View style={{ marginTop:10,alignItems: "center" }}>
-        <TouchableOpacity
-          onPress={() => setShowPreview(true)}
-          style={{
-            paddingHorizontal: 80,
-            paddingVertical: 10,
-            height: 50,
-            backgroundColor: COLORS.white,
-            borderRadius: 20,
-          
-          }}
-        >
-          <Text style={{ fontSize:20, color: COLORS.black,fontFamily: 'PlayfairDisplay-Bold'}}>Show Preview</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  if (!book) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.black }}>
-      {renderPreviewPages()}
-      <View style={{ flex: 1 }}>{renderBookInfoSection()}</View>
       <View style={{ flex: 1 }}>{renderBookDescription()}</View>
-      <View style={{ height: 40, marginBottom: 30 }}>{renderBottomButton()}</View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  previewPageContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  previewPageImage: {
-    width: "100%",
-    height: 500,
-    marginTop: 15,
-  },
-  pageNumberText: {
-    color: COLORS.white,
-  },
   descriptionTitle: {
-    ...FONTS.h1,
+    ...FONTS.h2,
     color: COLORS.white,
     marginBottom: SIZES.padding,
   },
   descriptionText: {
-    ...FONTS.body2,
+    ...FONTS.body3,
     color: COLORS.lightGray,
-    textAlign: 'justify',
     lineHeight: 22,
-    marginVertical: 10,
     letterSpacing: 0.1,
-  },
-  descriptionContainer: {
-    flex: 1,
-    flexDirection: "row",
-    padding: SIZES.padding,
-    marginTop: SIZES.padding,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: SIZES.radius,
-  },
-  scrollIndicatorContainer: {
-    width: 2,
-    height: "100%",
-    backgroundColor: COLORS.gray1,
-    borderRadius: SIZES.radius,
-  },
-  scrollIndicator: {
-    width: 4,
-    backgroundColor: COLORS.lightGray4,
+    marginBottom: SIZES.padding,
   },
   scrollViewContent: {
-    paddingLeft: SIZES.padding2,
+    paddingHorizontal: SIZES.padding,
+    paddingTop: SIZES.padding,
   },
 });
 

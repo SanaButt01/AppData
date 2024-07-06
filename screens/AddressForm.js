@@ -50,7 +50,7 @@ const AddressForm = ({ navigation, route }) => {
       }
       
       // Fetch the payment intent client secret from your backend
-      const response = await fetch('http://192.168.10.11:8000/api/create-payment-intent', {
+      const response = await fetch('http://192.168.100.180:8000/api/create-payment-intent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

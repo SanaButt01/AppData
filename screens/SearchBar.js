@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: "center",
     zIndex: 999,
-    marginTop: 10,
+    // marginTop: 10,
     borderColor: "black",
     borderWidth: 2,
   },
