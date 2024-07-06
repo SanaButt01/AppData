@@ -60,7 +60,7 @@ const ShoppingCart = ({ navigation }) => {
               <View key={index}>{renderItem({ item })}</View>
             ))}
             <View style={styles.totalContainer}>
-              <Text style={styles.totalText}>Total Price: Rs. {calculateTotalPrice(cartItems)}</Text>
+              <Text style={styles.totalText}>Total Price:Rs. {calculateTotalPrice(cartItems)}</Text>
               <TouchableOpacity 
   style={styles.checkoutButton} 
   onPress={() =>

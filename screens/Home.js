@@ -110,31 +110,6 @@ const Home = ({ navigation }) => {
       }
   };
 
-    // function renderHeader() {
-    //     return (
-    //         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: SIZES.padding, alignItems: 'center' }}>
-    //             <View style={{ flex: 1 }}>
-    //                 <View style={{ marginRight: SIZES.padding }}>
-    //                     <Text style={{ fontFamily:'ProtestRiot-Regular',fontSize:39, color: COLORS.primary }}></Text>
-    //                     {/* <Text style={{ ...FONTS.h2, color: COLORS.white }}>{profile.name}</Text> */}
-    //                 </View>
-    //             </View>
-    //             <TouchableOpacity style={{backgroundColor: COLORS.primary, height: 48,
-    //                     paddingLeft: 3,
-    //                     paddingRight: SIZES.radius,
-    //                     borderRadius: 20,
-    //                     marginTop:30,
-    //                     width: 100,
-    //                 }}
-    //                 onPress={()=>navigation.navigate('signup')}
-    //             >
-    //               <View style={{ flex: 1,flexDirection: 'row'}}>
-    //                <Text style={{color:COLORS.gray1,fontFamily:'ProtestRiot-Regular',fontSize:25,marginLeft:10}}>Signup</Text>
-    //                 </View>
-    //             </TouchableOpacity>               
-    //         </View>
-    //     )
-    // }
     const renderCategoryData = () => {
         const selectedCategoryData = categories.find(category => category.category_id === selectedCategory);
       
