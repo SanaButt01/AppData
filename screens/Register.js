@@ -3,6 +3,7 @@ import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet 
 import { icons } from "../constants";
 import { launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
+import { API_HOST } from '../myenv';
 
 const Register = ({ navigation }) => {
   const [name, setUsername] = useState('');
@@ -88,7 +89,7 @@ const Register = ({ navigation }) => {
   const handleSign = async () => {
     if (validateForm()) {
       try {
-        const response = await axios.post('http://192.168.10.9:8000/api/register', {
+        const response = await axios.post(API_HOST + '/api/register', {
           name: name,
           email: email,
           password: password,

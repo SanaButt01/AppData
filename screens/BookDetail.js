@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS, FONTS, SIZES } from "../constants";
+import axios from "axios";
+import { API_HOST } from "../myenv";
 
 const BookDetail = ({ route, navigation }) => {
   const { book_id, booksData } = route.params; // Receive booksData from route params
@@ -13,24 +15,23 @@ const BookDetail = ({ route, navigation }) => {
     const parsedBookId = parseInt(book_id);
 
     // Uncomment the following block and replace with API fetch for book details
-    /*
-    fetch(`https://yourapi.com/books/${parsedBookId}`)
-      .then(response => response.json())
-      .then(data => {
-        setBook(data); // Set the fetched book to state
-        // Assuming the API response structure is similar to fetchedContent below
-        const fetchedContent = {
-          book_id: parsedBookId,
-          description: data.description,
-          price: data.price,
-        };
-        setContent(fetchedContent);
-      })
-      .catch(error => {
-        console.error("Error fetching book details:", error);
-        // Handle error case
-      });
-    */
+    axios.get(`${API_HOST}/books/${parsedBookId}/content`)
+    .then(response => {
+      const data = response.data;
+      setBook(data); // Set the fetched book to state
+
+    // Assuming the API response structure is similar to fetchedContent below
+    const fetchedContent = {
+      book_id: parsedBookId,
+      description: data.description,
+    };
+    setContent(fetchedContent);
+  })
+  .catch(error => {
+    console.error("Error fetching book details:", error);
+    // Handle error case
+  });
+
 
     // For now, simulate fetching book details based on the selected book_id from route params
     const fetchedBook = booksData.find(item => item.book_id === parsedBookId);

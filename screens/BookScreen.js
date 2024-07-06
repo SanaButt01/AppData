@@ -6,6 +6,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import SearchBar from "./SearchBar";
 import { booksData } from "./BookScreen"; // Import booksData from BookScreen or wherever it is defined
 import { COLORS, FONTS, SIZES, images, icons } from '../constants'; 
+import axios from 'axios';
+import { API_HOST } from '../myenv';
+
+
 const BookScreen = ({ route }) => {
   const { categoryId } = route.params;
   const [books, setBooks] = useState([]);
@@ -39,15 +43,19 @@ const BookScreen = ({ route }) => {
     setBooks(filteredBooks);
     
     // Replace the hardcoded booksData with API call below:
-    // fetch(`https://yourapi.com/books?category_id=${categoryId}`)
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     setBooks(data); // Assuming API returns an array of books similar to booksData format
-    //   })
-    //   .catch(error => {
-    //     console.error("Error fetching books:", error);
-    //     // Handle error case
-    //   });
+    axios.get(`${API_HOST}/api/books`, {
+      params: {
+        category_id: categoryId
+      }
+    })
+    .then(response => {
+      const data = response.data;
+      setBooks(data); // Assuming API returns an array of books similar to booksData format
+    })
+    .catch(error => {
+      console.error("Error fetching books:", error);
+      // Handle error case
+    });
   }, [categoryId]); // Ensure categoryId is in the dependency array
 
   const navigateToBookDetail = (bookId) => {

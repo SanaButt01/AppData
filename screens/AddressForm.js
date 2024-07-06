@@ -3,6 +3,7 @@ import { ScrollView, Button, View, Text, TextInput, TouchableOpacity, StyleSheet
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 import { icons } from "../constants"; // Assuming you have icons imported
 import axios from 'axios';
+import { API_HOST } from '../myenv';
 
 const AddressForm = ({ navigation, route }) => {
   const { cartItems, totalPrice } = route.params; // Extracting params from navigation route
@@ -51,7 +52,7 @@ const AddressForm = ({ navigation, route }) => {
       }
       
       // Fetch the payment intent client secret from your backend
-const response = await axios.post('http://192.168.10.11:8000/api/create-payment-intent', {
+const response = await axios.post(API_HOST + '/api/create-payment-intent', {
   amount: totalPrice * 100, 
 }, {
   headers: {
