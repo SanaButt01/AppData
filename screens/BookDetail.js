@@ -13,9 +13,10 @@ const BookDetail = ({ route, navigation }) => {
   useEffect(() => {
     // Convert book_id to number (if necessary, ensure it's in the correct type)
     const parsedBookId = parseInt(book_id);
+    console.log(parsedBookId);
 
     // Uncomment the following block and replace with API fetch for book details
-    axios.get(`${API_HOST}/books/${parsedBookId}/content`)
+    axios.get(`${API_HOST}/api/books/${parsedBookId}/content`)
     .then(response => {
       const data = response.data;
       setBook(data); // Set the fetched book to state
@@ -23,7 +24,7 @@ const BookDetail = ({ route, navigation }) => {
     // Assuming the API response structure is similar to fetchedContent below
     const fetchedContent = {
       book_id: parsedBookId,
-      description: data.description,
+      description: data.description, 
     };
     setContent(fetchedContent);
   })

@@ -18,7 +18,7 @@ const SidePanel = () => {
 
   useEffect(() => {
     axios.get(`${API_HOST}/api/categories`)
-  .then(response => {
+    .then(response => {
     const data = response.data;
     setCategories(data); // Assuming API returns an array of categories similar to the current state format
   })
@@ -45,7 +45,7 @@ const SidePanel = () => {
             onPress={() => handleCategoryClick(category.category_id)}
             style={styles.categoryItem}
           >
-            <Image source={API_HOST +  "/ " + category.icon} style={styles.categoryImage} />
+            <Image source={category.icon} style={styles.categoryImage} />
             <Text style={styles.menuItemText}>{category.type}</Text>
           </TouchableOpacity>
         ))}
