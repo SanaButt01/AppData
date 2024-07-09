@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LogBox, View, Image } from 'react-native';
+import { LogBox, View, Image, TouchableOpacity } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { StripeProvider } from '@stripe/stripe-react-native';
 
@@ -38,6 +38,12 @@ const App = () => {
         SplashScreen.hide();
     }, []);
 
+    const handleLogout = () => {
+        // Implement your logout logic here
+        console.log('User logged out');
+        // Example: Clear user session, navigate to login screen, etc.
+    };
+
     return (
       <StripeProvider publishableKey="pk_test_51Ok46fKWEwsvQglH9hhqE9YhYSWHDpXG84EM5EaASAA4dnyBSAPzomo4ZDfcWJvK9EloBaQ8eOASrlgoBZhUBq7d00X4PRp02d">
       <NavigationContainer theme={theme}>
@@ -59,12 +65,34 @@ const App = () => {
 };
 
 const CustomDrawerContent = (props) => {
+    const { navigation } = props;
+
+    const handleLogout = () => {
+        // Implement your logout logic here
+        console.log('User logged out');
+        // Example: Clear user session, navigate to login screen, etc.
+        navigation.navigate('Login'); // Navigate to Login screen after logout
+    };
+
     return (
         <DrawerContentScrollView {...props}>
             <View style={{ alignItems: 'center', marginTop: 40 }}>
                 <Image source={icons.logo2} style={{ width: 110, height: 150 }} />
             </View>
             <DrawerItemList {...props} />
+            <TouchableOpacity onPress={handleLogout}>
+                <DrawerItem
+                    label="Logout"
+                    onPress={handleLogout}
+                    icon={() => <Image source={icons.logout} style={{alignItems: 'center', width: 35, height: 35 }} />}
+                    labelStyle={{
+                        fontSize: 20,
+                        color: 'black',
+                        fontFamily: 'PlayfairDisplay-Bold',
+                        marginLeft:-20
+                    }}
+                />
+            </TouchableOpacity>
         </DrawerContentScrollView>
     );
 };

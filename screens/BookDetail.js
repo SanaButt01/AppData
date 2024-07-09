@@ -5,53 +5,34 @@ import axios from "axios";
 import { API_HOST } from "../myenv";
 
 const BookDetail = ({ route, navigation }) => {
-  const { book_id, booksData } = route.params; // Receive booksData from route params
+  const { book_id } = route.params; // Receive book_id from route params
   const [book, setBook] = useState(null);
   const [content, setContent] = useState(null);
-  
 
   useEffect(() => {
-    // Convert book_id to number (if necessary, ensure it's in the correct type)
     const parsedBookId = parseInt(book_id);
 
-    // Uncomment the following block and replace with API fetch for book details
-    axios.get(`${API_HOST}/books/${parsedBookId}/content`)
-    .then(response => {
-      const data = response.data;
-      setBook(data); // Set the fetched book to state
+    axios.get(`${API_HOST}/api/books/${parsedBookId}/content`)
+      .then(response => {
+        console.log("API response:", response.data);
 
-    // Assuming the API response structure is similar to fetchedContent below
-    const fetchedContent = {
-      book_id: parsedBookId,
-      description: data.description,
-    };
-    setContent(fetchedContent);
-  })
-  .catch(error => {
-    console.error("Error fetching book details:", error);
-    // Handle error case
-  });
+        if (response.data) {
+          setBook(response.data);
 
-
-    // For now, simulate fetching book details based on the selected book_id from route params
-    const fetchedBook = booksData.find(item => item.book_id === parsedBookId);
-
-    if (fetchedBook) {
-      setBook(fetchedBook); // Set the fetched book to state
-
-      // For demo purposes, set hardcoded content data for the fetched book
-      const fetchedContent = {
-        book_id: parsedBookId,
-        description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.",
-      };
-      setContent(fetchedContent);
-    } else {
-      // Handle case where book is not found
-      console.log(`Book with id ${parsedBookId} not found.`);
-    }
+          const fetchedContent = {
+            book_id: parsedBookId,
+            description: response.data.description,
+          };
+          setContent(fetchedContent);
+        } else {
+          console.error("No data found in response");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching book details:", error);
+      });
   }, [book_id]);
 
-  // Function to navigate to PreviewScreen
   const handleShowPreview = () => {
     navigation.navigate('PreviewScreen', { book_id: book_id });
   };
@@ -66,19 +47,11 @@ const BookDetail = ({ route, navigation }) => {
       >
         <Text style={styles.descriptionTitle}>Description</Text>
         <Text style={styles.descriptionText}>{content.description}</Text>
-        {/* Additional content details or actions */}
         <TouchableOpacity
           onPress={handleShowPreview}
-          style={{
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            marginTop: 20,
-            backgroundColor: COLORS.primary,
-            borderRadius: 10,
-            alignItems: "center",
-          }}
+          style={styles.previewButton}
         >
-          <Text style={{ color: COLORS.white, ...FONTS.body2 }}>Show Preview</Text>
+          <Text style={styles.previewButtonText}>Show Preview</Text>
         </TouchableOpacity>
       </ScrollView>
     );
@@ -108,6 +81,18 @@ const styles = StyleSheet.create({
   descriptionText: {
     ...FONTS.body3,
     marginBottom: SIZES.padding * 2,
+  },
+  previewButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginTop: 20,
+    backgroundColor: COLORS.primary,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  previewButtonText: {
+    color: COLORS.white,
+    ...FONTS.body2,
   },
 });
 

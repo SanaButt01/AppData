@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, ToastAndroid } from 'react-native';
 import { icons } from "../constants";
 import { launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
@@ -98,7 +98,8 @@ const Register = ({ navigation }) => {
 
         if (response.status === 201) {
           console.log('Registration successful:', response.data);
-          // navigation.navigate('Dashboard');
+          ToastAndroid.show('Registration successful! Now you can login.', ToastAndroid.LONG);
+          navigation.navigate('Login');
         } else {
           console.log('Registration failed:', response.data);
         }

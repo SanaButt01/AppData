@@ -1,252 +1,106 @@
-import {
-    SafeAreaView,
-    View,
-    Text,
-    TouchableOpacity,
-    Image,
-   StyleSheet,
-  //  ScrollView,
-   Button,
-   FlatList
-   
-  } from 'react-native';
-  import {  useSelector } from 'react-redux';
-  import { COLORS, SIZES, icons,images} from '../constants';
-  import React,{useEffect, useState} from 'react';
-  import { useDispatch} from 'react-redux';
-  import {addtocart} from "../ACTIONS";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { API_HOST } from '../myenv';
 
+const SidePanel = () => {
+  const navigation = useNavigation();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
 
-
-const Home = ({ navigation }) => {
-  // const [profile, setProfile] = React.useState(profileData);
-   // const profileData = {
-    //     name: 'Username', 
-    // }
-    const [addedToCart, setAddedToCart] = useState({});
-    const [cartItems,setCartItems]=useState(0)
-    const cartData=useSelector((state)=>state.reducer);
-    const [selectedCategory, setSelectedCategory] = useState(1);
-    const dispatch=useDispatch();
-
- const goToCart = () => {
-    navigation.navigate('ShoppingCart');
-  };
-    const [categories, setCategories] = useState([
-        {
-          category_id: 1,
-          type: "Clearance Sale",
-          books: [
-            {
-              book_id: 1,
-              title: "To Sleep in a Sea of Stars",
-              path: images.sea,
-              author: "Christopher Paolini",
-              description: "This massive volume about a brave interplanetary explorer in an impossible situation was one of my biggest reading surprises of the year; since it was written by the young author of the “Eragon” novels, and since those novels were decidedly pedestrian, I was ready to be disappointed by this doorstop - and instead found it totally absorbing.",
-              price: 4000,
-              disco: "20%OFF",
-              paths: [
-                { im:images.sea},
-                { im:images.sea},
-                { im:images.sea},
-                // Add more pages as needed
-            ]
-            },
-            {
-              book_id: 2,
-              title: "The Tiny Dragon",
-              path: images.theTinyDragon,
-              author: "Christopher Paolini",
-              description: "This massive volume about a brave interplanetary explorer in an impossible situation was one of my biggest reading surprises of the year; since it was written by the young author of the “Eragon” novels, and since those novels were decidedly pedestrian, I was ready to be disappointed by this doorstop - and instead found it totally absorbing.",
-              price: 4000,
-              disco: "20%OFF",// discount
-              paths: [
-                { im:images.sea},
-                { im:images.sea},
-                { im:images.sea},
-                // Add more pages as needed
-            ]
-            },
-          
-            {
-              book_id: 3,
-              title: "The Metropolis",
-              path: images.theMetropolist,
-              author: "Christopher Paolini",
-              description: "This massive volume about a brave interplanetary explorer in an impossible situation was one of my biggest reading surprises of the year; since it was written by the young author of the “Eragon” novels, and since those novels were decidedly pedestrian, I was ready to be disappointed by this doorstop - and instead found it totally absorbing.",
-              price: 4000,
-              disco: "20%OFF",
-              paths: [
-                { im:images.sea},
-                { im:images.sea},
-                { im:images.sea},
-                // Add more pages as needed
-            ]
-            },
-           
-          ]
-        }
-      ]);
-
-    useEffect(()=>{
-        setCartItems(cartData.length)
-    },[cartData])// this useState update the value only when it is called thats why we write [cartdata]
-    
-    useEffect(() => {
-      const updatedAddedToCart = {};
-      cartData.forEach((item) => {
-          updatedAddedToCart[item.title] = true;
+  useEffect(() => {
+    axios.get(`${API_HOST}/api/categories`)
+      .then(response => {
+        const data = response.data;
+        // Filter the categories to only include the one with category_id: 5
+        const filteredCategories = data.filter(category => category.type === 'Clearance Sale');
+        setCategories(filteredCategories);
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
       });
-      setAddedToCart(updatedAddedToCart);
-  }, [cartData]);
-  
-  const handleAddtoCart = (item) => {
-      if (addedToCart[item.title]) {
-          // If already added to cart, remove it
-          // Dispatch action to remove item from cart
-      } else {
-          // If not added to cart, add it
-          dispatch(addtocart(item));
-      }
+  }, []);
+
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId);
+    navigation.navigate('BookScreen', { categoryId });
   };
 
-    const renderCategoryData = () => {
-        const selectedCategoryData = categories.find(category => category.category_id === selectedCategory);
-      
-        if (!selectedCategoryData) {
-          return null;
-        }
-      
-        return (
-          <FlatList
-            data={selectedCategoryData.books}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={{ paddingHorizontal: SIZES.padding, paddingBottom:"70%",paddingTop:5 }}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.bookContainer}
-                onPress={() => navigation.navigate("BookDetail", { book: item })}
-              >
-                <View style={styles.imageContainer}>
-                  <Image
-                    source={item.path}
-                    resizeMode="cover"
-                    style={styles.bookImage}
-                  />
-                </View>
-                <View style={styles.bookDetails}>
-                  <Text style={styles.bookTitle}>{item.title}</Text>
-                  <Text style={styles.author}>By : {item.author}</Text>
-                  <Text style={styles.price}>Rs. {item.price}</Text>
-                  {item.disco && (
-              <View style={styles.discountContainer}>
-                <Text style={styles.discountText}>{item.disco}</Text>
-              </View>
-            )}
-                  <Button
-                    onPress={() => handleAddtoCart(item)}
-                    color='black'
-                    title={addedToCart[item.title] ? 'Added to Cart' : 'ADD TO CART'}
-                    disabled={addedToCart[item.title]}
-                    style={styles.addButton}
-                  />
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        );
-      };
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor:'white'}}>
-            {/* Header Section */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-  <Text style={{ fontSize: 35, padding: 5, color:'black', fontFamily: 'PlayfairDisplay-Bold' }}>Clearance Sale</Text>
-  <TouchableOpacity style={{ height: 30 }} onPress={goToCart}>
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Image
-        source={icons.bookmark_icon}
-        resizeMode="contain"
-        style={{ marginLeft: 8, width: 45, height: 40 }}
-      />
-      <Text style={{ fontFamily: 'PlayfairDisplay-Bold', color: 'black', marginRight: 10, fontSize: 15 }}>{cartItems}</Text>
-    </View>
-  </TouchableOpacity>
-</View>
+  const getImageSource = (icon) => {
+    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
+  };
 
-            {/* <ScrollView  contentContainerStyle={{ paddingBottom: 100,marginTop: SIZES.radius}}> */}
-                {/* Books sale */}
-                <View>
-                    {renderCategoryData()}
-                </View>
-            {/* </ScrollView> */}
-        </SafeAreaView>
-    )
-}
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.categoryHeaderTextContainer}>
+        <Text style={styles.categoryHeaderText}>Categories</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.categoriesContainer}>
+        {categories.map(category => (
+          <TouchableOpacity
+            key={category.category_id}
+            onPress={() => handleCategoryClick(category.category_id)}
+            style={styles.categoryItem}
+          >
+            <Image source={getImageSource(category.icon)} style={styles.categoryImage} />
+            <Text style={styles.menuItemText}>{category.type}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
-    bookContainer: {
-      flexDirection: 'row',
-      backgroundColor: COLORS.white,
-      borderRadius: SIZES.radius,
-      marginBottom: SIZES.padding,
-      width: '100%',
-      elevation: 3,
-      shadowColor: COLORS.black,
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.1,
-      shadowRadius: 3,
-    },
-    imageContainer: {
-      width: '30%',
-      height: 160,
-      borderTopLeftRadius: SIZES.radius,
-      borderBottomLeftRadius: SIZES.radius,
-      overflow: 'hidden',
-    },
-    bookImage: {
-      width: '100%',
-      height: '100%',
-    },
-    bookDetails: {
-      flex: 1,
-      padding: SIZES.padding,
-    },
-    bookTitle: {
-      fontSize: SIZES.body2,
-      fontFamily: 'PlayfairDisplay-Bold',
-      color: COLORS.black,
-      marginBottom: 5,
-    },
-    author: {
-      fontSize: SIZES.body3,
-      fontFamily: 'PlayfairDisplay-Bold',
-      color: COLORS.gray,
-      marginBottom: 5,
-    },
-    price: {
-      fontSize: SIZES.body3,
-      fontFamily: 'PlayfairDisplay-Bold',
-      color: COLORS.black,
-      marginBottom: 5,
-    },
-    addButton: {
-      alignSelf: 'flex-end',
-    },
-    discountContainer: {
-      position: 'absolute',
-      top: 1,
-      right: 10,
-      backgroundColor: 'red',
-      paddingVertical: 5,
-      paddingHorizontal: 10,
-      borderRadius: 8,
-    },
-    discountText: {
-      color: 'white',
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
-   
-  });
+  container: {
+    backgroundColor: 'white',
+    padding: 20,
+    width: '100%',
+    alignSelf: 'center',
+    borderRadius: 15,
+  },
+  categoriesContainer: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    paddingBottom: 5,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  categoryItem: {
+    width: '48%',
+    marginTop: 10,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 15,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  menuItemText: {
+    fontSize: 15,
+    color: '#333',
+    fontFamily: 'PlayfairDisplay-Bold',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  categoryHeaderTextContainer: {
+    width: '100%',
+  },
+  categoryHeaderText: {
+    fontSize: 28,
+    color: 'black',
+    fontFamily: 'PlayfairDisplay-Bold',
+  },
+  categoryImage: {
+    width: '100%',
+    height: 120,
+    borderRadius: 15,
+    marginBottom: 10,
+  },
+});
 
-  
-export default Home;
+export default SidePanel;
