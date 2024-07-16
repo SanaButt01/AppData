@@ -33,28 +33,11 @@ const BookDetail = ({ route, navigation }) => {
     // Handle error case
   });
 
-
-    // For now, simulate fetching book details based on the selected book_id from route params
-    const fetchedBook = booksData.find(item => item.book_id === parsedBookId);
-
-    if (fetchedBook) {
-      setBook(fetchedBook); // Set the fetched book to state
-
-      // For demo purposes, set hardcoded content data for the fetched book
-      const fetchedContent = {
-        book_id: parsedBookId,
-        description: "Written by a team based at one of the world's leading centres for linguistic teaching and research, the second edition of this highly successful textbook offers a unified approach to language, viewed from a range of perspectives essential for students' understanding of the subject.",
-      };
-      setContent(fetchedContent);
-    } else {
-      // Handle case where book is not found
-      console.log(`Book with id ${parsedBookId} not found.`);
-    }
   }, [book_id]);
 
   // Function to navigate to PreviewScreen
   const handleShowPreview = () => {
-    navigation.navigate('PreviewScreen', { book_id: book_id });
+    navigation.navigate('PreviewScreen', { content_id: book.content_id });
   };
 
   function renderBookDescription() {

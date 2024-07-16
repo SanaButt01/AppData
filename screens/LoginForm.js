@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { icons, COLORS } from "../constants";
+import axios from 'axios';
+import { API_HOST } from '../myenv';
 
 const Login = ({ navigation }) => {
-
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
- 
 
   const handlePasswordChange = (text) => {
     setPassword(text.trimStart());
@@ -22,8 +22,6 @@ const Login = ({ navigation }) => {
     setShowPassword(!showPassword);
   };
 
-
-
   const validateForm = () => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
 
@@ -33,8 +31,7 @@ const Login = ({ navigation }) => {
     } else if (!validateEmail(email)) {
       Alert.alert('Please enter a valid email address.');
       return false;
-    } 
-    else if (password.length < 8) {
+    } else if (password.length < 8) {
       Alert.alert('Password must be at least 8 characters long.');
       return false;
     } else if (!passwordRegex.test(password)) {
@@ -50,14 +47,25 @@ const Login = ({ navigation }) => {
     return regex.test(email);
   };
 
-  const handleSign = () => {
+  const handleSign = async () => {
     if (validateForm()) {
-      
-      console.log('Password:', password);
-      console.log('Email:', email);
-      setError('');
-      // Proceed with registration logic
-      navigation.navigate('Dashboard');
+      try {
+        const response = await axios.post(API_HOST + '/api/login', {
+          email: email,
+          password: password,
+        });
+
+        if (response.status === 200) {
+          // Login successful
+          navigation.navigate('Dashboard');
+        } else {
+          // Handle other status codes if needed
+          Alert.alert('Login failed. Please check your credentials.');
+        }
+      } catch (error) {
+        console.error('Error logging in:', error);
+        Alert.alert('Login failed. Please try again later.');
+      }
     }
   };
 

@@ -26,7 +26,6 @@ const Register = ({ navigation }) => {
   const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
   const selectImage = () => {
-    setShowText(false);
     let options = {
       mediaType: 'photo',
       maxWidth: 350,
@@ -34,15 +33,15 @@ const Register = ({ navigation }) => {
       quality: 1,
       includeBase64: true,
     };
+  
     launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('User canceled image selection');
-        return;
       } else if (response.error) {
-        console.log('Error:', response.error);
-        return;
+        console.log('ImagePicker Error:', response.error);
+      } else {
+        setIcon(response.assets[0]);
       }
-      setIcon(response.assets[0]);
     });
   };
 
@@ -89,21 +88,36 @@ const Register = ({ navigation }) => {
   const handleSign = async () => {
     if (validateForm()) {
       try {
-        const response = await axios.post(API_HOST + '/api/register', {
-          name: name,
-          email: email,
-          password: password,
-          password_confirmation: confirmPassword,
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('password_confirmation', confirmPassword);
+        
+        if (icon) {
+          formData.append('icon', {
+            uri: icon.uri,
+            type: icon.type,
+            name: icon.fileName,
+          });
+        }
+  
+        const response = await axios.post(API_HOST + '/api/register', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
-
+  
         if (response.status === 201) {
           console.log('Registration successful:', response.data);
-          // navigation.navigate('Dashboard');
+          // Navigate to success screen or handle accordingly
         } else {
           console.log('Registration failed:', response.data);
+          // Handle registration failure (e.g., display error message)
         }
       } catch (error) {
         console.error('Error registering user:', error.response ? error.response.data : error.message);
+        // Handle network error or other exceptions
       }
     }
   };
@@ -122,34 +136,34 @@ const Register = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        {icon ? (
-          <View>
-            <Image
-              style={styles.profileImage}
-              source={{ uri: `data:${icon.type};base64,${icon.base64}` }}
-            />
-            <TouchableOpacity style={styles.cameraOverlay} onPress={handleCameraIconPress}>
-              <Image source={icons.camera} style={styles.cameraIcon} />
-            </TouchableOpacity>
-            {showText && (
-              <View style={styles.optionsContainer}>
-                <TouchableOpacity onPress={removePhoto}>
-                  <Text style={styles.optionText}>Remove Photo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={selectImage}>
-                  <Text style={styles.optionText}>Change Photo</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        ) : (
-          <TouchableOpacity onPress={selectImage}>
-            <View style={styles.uploadContainer}>
-              <Text style={styles.uploadButtonText}>Upload Photo</Text>
-            </View>
+  {icon ? (
+    <View>
+      <Image
+        style={styles.profileImage}
+        source={{ uri: `data:${icon.type};base64,${icon.base64}` }}
+      />
+      <TouchableOpacity style={styles.cameraOverlay} onPress={handleCameraIconPress}>
+        <Image source={icons.camera} style={styles.cameraIcon} />
+      </TouchableOpacity>
+      {showText && (
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity onPress={removePhoto}>
+            <Text style={styles.optionText}>Remove Photo</Text>
           </TouchableOpacity>
-        )}
+          <TouchableOpacity onPress={selectImage}>
+            <Text style={styles.optionText}>Change Photo</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  ) : (
+    <TouchableOpacity onPress={selectImage}>
+      <View style={styles.uploadContainer}>
+        <Text style={styles.uploadButtonText}>Upload Photo</Text>
       </View>
+    </TouchableOpacity>
+  )}
+</View>
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <View style={styles.inputContainer}>
           <Image source={icons.page_icon} style={styles.icon} />

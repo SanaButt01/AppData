@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { icons } from "../constants";
+import axios from 'axios';
+import { API_HOST } from '../myenv';
 const FeedBack= ({ navigation }) => {
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
@@ -36,13 +38,22 @@ const validateEmail = (email) => {
 //   };
   
 
-  const handleForm = () => {
+  const handleForm = async () => {
     if (validateForm()) {
-     
-      console.log('Feedback:', message);
-      setError('');
-      // Proceed with registration logic
-      Alert.alert('Success', ' successful!');
+      try {
+        const res = await axios.post(API_HOST +'/api/feedbacks', {
+          message: message,
+          email: email
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+  
+        Alert.alert('Success', ' successful!');
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
   return (

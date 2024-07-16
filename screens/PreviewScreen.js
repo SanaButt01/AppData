@@ -1,77 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { COLORS, SIZES } from "../constants";
-import { images } from "../constants"; // Import your image assets
+import axios from "axios";
+import { API_HOST } from "../myenv";
 
 const PreviewScreen = ({ route }) => {
-  const { book_id } = route.params;
+  const { content_id } = route.params;
   const [previews, setPreviews] = useState([]);
 
-  // Hardcoded previews data as useState
-  const [previewsData] = useState([
-    {
-      preview_id: 1,
-      content_id: 1,
-      paths: [
-        { im: images.eng1 },
-        { im: images.eng1 },
-        { im: images.eng1 },
-      ],
-      created_at: "2023-01-01",
-      updated_at: "2023-01-01",
-    },
-    {
-      preview_id: 1,
-      content_id: 2,
-      paths: [
-        { im: images.eng2 },
-        { im: images.eng2 },
-        { im: images.eng2 },
-      ],
-      created_at: "2023-01-02",
-      updated_at: "2023-01-02",
-    },
-    {
-      preview_id: 1,
-      content_id: 3,
-      paths: [
-        { im: images.LA },
-        { im: images.LA },
-        { im: images.LA },
-      ],
-      created_at: "2023-01-03",
-      updated_at: "2023-01-03",
-    },
-    {
-      preview_id: 1,
-      content_id: 4,
-      paths: [
-        { im: images.AI },
-        { im: images.AI },
-        { im: images.AI },
-      ],
-      created_at: "2023-01-03",
-      updated_at: "2023-01-03",
-    },
-    // Add more previews as needed
-  ]);
-
   useEffect(() => {
-    // Filter previews based on book_id when it changes
-    const fetchedPreviews = previewsData.filter(item => item.content_id === book_id);
-    setPreviews(fetchedPreviews);
-    
-    // Replace the hardcoded previewsData with API call below:
-    // fetch(`https://yourapi.com/previews?book_id=${book_id}`)
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     setPreviews(data); // Assuming API returns an array of previews similar to previewsData format
-    //   })
-    //   .catch(error => {
-    //     console.error("Error fetching previews:", error);
-    //     // Handle error case
-    //   });
-  }, [book_id]); // Ensure book_id is in the dependency array
+    // Fetch previews based on content_id
+    const fetchPreviews = async () => {
+      try {
+        const response = await axios.get(`${API_HOST}/api/previews/${content_id}`); // Replace with your actual API endpoint
+        setPreviews(response.data); // Assuming data is an array of previews objects
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching previews:", error);
+        // Handle error state or retry logic if needed
+      }
+    };
+
+    fetchPreviews();
+  }, [content_id]); // Ensure content_id is in the dependency array
 
   function renderPreviews() {
     if (previews.length === 0) {
@@ -87,16 +38,13 @@ const PreviewScreen = ({ route }) => {
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
-        {previews.map((preview, index) => (
-          <View key={index} style={styles.previewContainer}>
-            {preview.paths.map((path, pathIndex) => (
-              <Image
-                key={pathIndex}
-                source={path.im} // Assuming path is imported from images
-                resizeMode="contain"
-                style={styles.previewImage}
-              />
-            ))}
+        {previews.map((preview) => (
+          <View key={preview.preview_id} style={styles.previewContainer}>
+            <Image
+              source={ API_HOST + '/' + preview.path } // Assuming path is the URL to the image
+              resizeMode="contain"
+              style={styles.previewImage}
+            />
           </View>
         ))}
       </ScrollView>
