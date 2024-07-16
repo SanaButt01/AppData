@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { addtocart } from "../ACTIONS";
 import { useSelector, useDispatch } from 'react-redux';
 import SearchBar from "./SearchBar";
-import { booksData } from "./BookScreen"; // Import booksData from BookScreen or wherever it is defined
 import { COLORS, FONTS, SIZES, images, icons } from '../constants'; 
 import axios from 'axios';
 import { API_HOST } from '../myenv';
@@ -16,26 +15,14 @@ const BookScreen = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const cartData = useSelector((state) => state.reducer);
+  const [cartItems,setCartItems]=useState(0)
   const [addedToCart, setAddedToCart] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-
-  // Initialize booksData with hardcoded data
-  const [booksData, setBooksData] = useState([
-    { book_id: 1, category_id: 1, title: "Introducing Linguistics", author: "Joyce Bruhn de Garavito", path: require("../assets/images/eng1.jpg"),price:500 },
-    { book_id: 2, category_id: 1, title: "Linguistics An Introduction", author: "Andrew Radford", path: require("../assets/images/eng2.jpg"),price:650},
-    { book_id: 3, category_id: 2, title: "Data Structures & Algorithms", author: "Alfred V. AHO", path: require("../assets/images/LA.jpg"),price:10},
-    { book_id: 4, category_id: 2, title: "Artificial Intelligence", author: "Andrew Radford", path: require("../assets/images/AI.jpg"),price:1500},
-  ]);
-
-  useEffect(() => {
-    // Initialize addedToCart state based on cartData
-    const updatedAddedToCart = {};
-    cartData.forEach((item) => {
-      updatedAddedToCart[item.title] = true;
-    });
-    setAddedToCart(updatedAddedToCart);
-  }, [cartData]);
+  const [booksData, setBooksData] = useState([]);
+  const goToCart = () => {
+    navigation.navigate('ShoppingCart');
+  };
 
   useEffect(() => {
     // Simulate fetching books based on the selected category ID
@@ -58,10 +45,26 @@ const BookScreen = ({ route }) => {
     });
   }, [categoryId]); // Ensure categoryId is in the dependency array
 
+
   const navigateToBookDetail = (bookId) => {
     // Pass booksData to BookDetail route
     navigation.navigate('BookDetail', { book_id: bookId, booksData });
   };
+
+
+
+   useEffect(()=>{
+        setCartItems(cartData.length)
+    },[cartData])// this useState update the value only when it is called thats why we write [cartdata]
+    
+  useEffect(() => {
+    // Initialize addedToCart state based on cartData
+    const updatedAddedToCart = {};
+    cartData.forEach((item) => {
+      updatedAddedToCart[item.title] = true;
+    });
+    setAddedToCart(updatedAddedToCart);
+  }, [cartData]);
 
   const handleAddtoCart = (item) => {
     if (addedToCart[item.title]) {
@@ -85,15 +88,24 @@ const BookScreen = ({ route }) => {
     setIsSearching(query.trim() !== "");
   };
 
+  const getImageSource = (icon) => {
+    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
+  };
+
   const renderBookItem = ({ item }) => (
     <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item.book_id)}>
       <View style={styles.imageContainer}>
-        <Image source={item.path} resizeMode="cover" style={styles.bookImage} />
+        <Image source={getImageSource(item.path)} resizeMode="cover" style={styles.bookImage} />
       </View>
       <View style={styles.bookDetails}>
         <Text style={styles.bookTitle}>{item.title}</Text>
         <Text style={styles.author}>By: {item.author}</Text>
         <Text style={styles.price}>Rs. {item.price}</Text>
+        {item.disc && (
+              <View style={styles.discountContainer}>
+                <Text style={styles.discountText}>{item.disc}%Off</Text>
+              </View>
+            )}
         <Button
           onPress={() => handleAddtoCart(item)}
           color='black'
@@ -108,6 +120,17 @@ const BookScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <SearchBar onSearch={handleSearch} />
+      <TouchableOpacity style={{ height: 30 ,marginTop:70,marginLeft:5}} onPress={goToCart}>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Image
+        source={icons.bookmark_icon}
+        resizeMode="contain"
+        style={{ width: 45, height: 40 }}
+      />
+      <Text style={{ fontFamily: 'PlayfairDisplay-Bold', color: 'black', marginRight: 10, fontSize: 15 }}>{cartItems}</Text>
+    </View>
+  </TouchableOpacity>
+  
       <FlatList
         data={isSearching ? searchResults : books}
         keyExtractor={item => item.book_id.toString()}
@@ -124,8 +147,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   bookList: {
-    paddingVertical: 76,
-    paddingHorizontal: 26,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
   },
   bookContainer: {
     flexDirection: 'row',
@@ -168,6 +191,20 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 14,
     color: '#666',
+  },
+  discountContainer: {
+    position: 'absolute',
+    top: 1,
+    right: 5,
+    backgroundColor: 'red',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  discountText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   
 });

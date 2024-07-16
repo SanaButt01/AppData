@@ -1,36 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { icons } from '../constants';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 
 const SidePanel = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categories, setCategories] = useState([
-    { category_id: 1, type: "Linguistics", icon: require("../assets/images/p1.jpg") },
-    { category_id: 2, type: "Computer Science", icon: require("../assets/images/cmp.jpg") },
-    // Add more categories as needed
-  ]);
-
-  // Uncomment the following block and replace with API fetch for categories
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    axios.get(`${API_HOST}/api/categories`)
-    .then(response => {
-    const data = response.data;
-    setCategories(data); // Assuming API returns an array of categories similar to the current state format
-  })
-  .catch(error => {
-    console.error('Error fetching categories:', error);
-    // Handle error case
-  });
+    fetchCategories();
   }, []);
+
+  const fetchCategories = () => {
+    axios.get(`${API_HOST}/api/categories`)
+      .then(response => {
+        const data = response.data;
+        // Filter out the category with the type "Clearance Sale"
+        const filteredCategories = data.filter(category => category.type !== 'Clearance Sale');
+        setCategories(filteredCategories);
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
+      });
+  };
 
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
     navigation.navigate('BookScreen', { categoryId });
+  };
+
+  const getImageSource = (icon) => {
+    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
   };
 
   return (
@@ -45,7 +47,7 @@ const SidePanel = () => {
             onPress={() => handleCategoryClick(category.category_id)}
             style={styles.categoryItem}
           >
-            <Image source={category.icon} style={styles.categoryImage} />
+            <Image source={getImageSource(category.icon)} style={styles.categoryImage} />
             <Text style={styles.menuItemText}>{category.type}</Text>
           </TouchableOpacity>
         ))}

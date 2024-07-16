@@ -24,8 +24,10 @@ export const visa = require("../assets/icons/visa.png");
 export const cvv = require("../assets/icons/cvv.png");
 export const loc = require("../assets/icons/loc.png");
 export const phn = require("../assets/icons/phn.png");
+export const logout = require("../assets/icons/logout.png");
 export default {
     page_filled_icon,
+    logout,
     phn,
     loc,
     cvv,
