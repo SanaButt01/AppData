@@ -54,7 +54,7 @@ const SidePanel = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}; 
 
 const styles = StyleSheet.create({
   container: {
