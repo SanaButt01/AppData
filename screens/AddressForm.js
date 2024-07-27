@@ -73,6 +73,22 @@ if (error) {
   console.log('Payment confirmation error', error);
 } else if (paymentIntent) {
   console.log('Payment successful', paymentIntent);
+  const productTitles = cartItems.map(item => item.title);
+  const order_response = await axios.post(API_HOST + '/api/orders', {
+    email: email,
+    phone_number: phone_number,
+    address: address,
+    product: productTitles,
+    status: 'pending',
+    total: totalPrice,
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+
+  console.log(order_response.data);
+
 }
     }
   };

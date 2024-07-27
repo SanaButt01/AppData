@@ -11,6 +11,7 @@ const BookDetail = ({ route, navigation }) => {
 
   useEffect(() => {
     const parsedBookId = parseInt(book_id);
+    console.log(parsedBookId);
 
     axios.get(`${API_HOST}/api/books/${parsedBookId}/content`)
       .then(response => {
@@ -34,7 +35,7 @@ const BookDetail = ({ route, navigation }) => {
   }, [book_id]);
 
   const handleShowPreview = () => {
-    navigation.navigate('PreviewScreen', { book_id: book_id });
+    navigation.navigate('PreviewScreen', { content_id: book.content_id });
   };
 
   function renderBookDescription() {

@@ -1,50 +1,66 @@
 import React, { useState } from 'react';
 import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { icons } from "../constants";
-const FeedBack= ({ navigation }) => {
+import axios from 'axios';
+import { API_HOST } from '../myenv';
+
+const FeedBack = ({ navigation }) => {
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  
+
   const handleFeedbackChange = (text) => {
     setMessage(text.trimStart());
   };
-  
+
   const handleEmailChange = (text) => {
     setEmail(text.trimStart());
   };
-const validateEmail = (email) => {
-    // Regular expression for email validation
+
+  const validateEmail = (email) => {
     const regex = /\S+@gmail\.com/;
     return regex.test(email);
   };
+
   const validateForm = () => {
     if (!message.trim()) {
-      setError('All The Feilds Must Be Filled.');
+      setError('All The Fields Must Be Filled.');
       return false;
-    } 
-    else if (!validateEmail(email)) {
+    } else if (!validateEmail(email)) {
       setError('Please enter a valid email address.');
       return false;
     }
     return true;
   };
-//   const handleChange = (text) => {
-//     // Remove any non-numeric characters
-//     const numericValue = text.replace(/[^0-9]/g, '');
-//     setNumber(numericValue);
-//   };
-  
 
-  const handleForm = () => {
+  const handleForm = async () => {
     if (validateForm()) {
-     
-      console.log('Feedback:', message);
-      setError('');
-      // Proceed with registration logic
-      Alert.alert('Success', ' successful!');
+      try {
+        const requestUrl = `${API_HOST}/api/feedbacks`;
+        console.log('Request URL:', requestUrl); // Debugging log
+  
+        const res = await axios.post(requestUrl, {
+          message: message,
+          email: email
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+  
+        Alert.alert('Success', 'Feedback submitted successfully!');
+        
+        // Clear the fields
+        setMessage('');
+        setEmail('');
+        setError('');
+      } catch (error) {
+        console.error('Axios error:', error); // Detailed error log
+      }
     }
   };
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -74,14 +90,14 @@ const validateEmail = (email) => {
           </View>
 
           <View style={styles.inputContainer}>
-          <TextInput
-        style={styles.input}
-        placeholder="Give Your FeedBack.."
-        placeholderTextColor="black"
-        value={message}
-        onChangeText={handleFeedbackChange}
-        multiline
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Give Your Feedback.."
+              placeholderTextColor="black"
+              value={message}
+              onChangeText={handleFeedbackChange}
+              multiline
+            />
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -144,15 +160,6 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'Roboto-Regular',
   },
-  showPasswordButton: {
-    position: 'absolute',
-    right: 10,
-  },
-  showPasswordIcon: {
-    width: 24,
-    height: 24,
-    tintColor: '#888',
-  },
   button: {
     backgroundColor: '#000000',
     width: '80%',
@@ -176,6 +183,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
 
 export default FeedBack;

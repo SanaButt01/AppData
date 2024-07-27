@@ -25,8 +25,14 @@ export const cvv = require("../assets/icons/cvv.png");
 export const loc = require("../assets/icons/loc.png");
 export const phn = require("../assets/icons/phn.png");
 export const logout = require("../assets/icons/logout.png");
+export const sale = require("../assets/icons/sale.png");
+export const contact = require("../assets/icons/contact.png");
+export const About = require("../assets/icons/About.png");
 export default {
     page_filled_icon,
+    About,
+    contact,
+    sale,
     logout,
     phn,
     loc,
