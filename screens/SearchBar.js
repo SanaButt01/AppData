@@ -42,21 +42,21 @@ const SearchBar = ({ onSearch }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 7,
+    padding: 10,
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 40,
     position: 'absolute',
     alignSelf: "center",
     zIndex: 999,
-    // marginTop: 10,
+    marginTop: 90,
     borderColor: "black",
-    borderWidth: 2,
+    borderWidth: 1,
   },
   input: {
     height: 35,
     borderColor: 'white',
     borderWidth: 1,
-    paddingLeft: 5,
+    paddingLeft: 7,
     width: '100%', // Fill the available width
     fontFamily: 'PlayfairDisplay-Bold',
   },

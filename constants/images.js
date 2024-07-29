@@ -23,7 +23,9 @@ export const p3=require("../assets/images/p3.jpg");
 export const cmp=require("../assets/images/cmp.jpg");
 export const comp=require("../assets/images/comp.jpg");
 export const chem=require("../assets/images/chem.jpg");
+
 export default {
+ 
     chem,
     comp,
     eng1,

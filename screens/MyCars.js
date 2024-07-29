@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Text } from 'react-native';
-
+import { icons,images } from "../constants";
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const MyCarousel = ({navigation}) => {
@@ -26,6 +26,22 @@ const MyCarousel = ({navigation}) => {
       >
         <View style={styles.slide}>
           <Image source={localImage1} style={styles.image} />
+          {currentPage === 0 && (
+            <View style={styles.buttonContainer}>
+               <TouchableOpacity style={styles.buttonWrapper} 
+               onPress={()=>navigation.navigate('Signup')}>
+                <Text style={styles.buttonText}>Signup</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.buttonWrappe} 
+               onPress={()=>navigation.navigate('Login')}>
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+              
+
+            </View>
+            
+          )}
         </View>
   
         <View style={styles.slide}>
@@ -36,27 +52,9 @@ const MyCarousel = ({navigation}) => {
         </View>
         <View style={styles.slide}>
           <Image source={localImage4}  style={styles.image} />
-          {currentPage === 3 && (
-            <View style={styles.buttonContainer}>
-               <TouchableOpacity style={styles.buttonWrapper} 
-               onPress={()=>navigation.navigate('Signup')}>
-                <Text style={styles.buttonText}>Get Started</Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </ScrollView>
-      <View style={styles.pagination}>
-        {[...Array(4)].map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              index === currentPage && styles.paginationDotActive,
-            ]}
-          />
-        ))}
-      </View>
+     
     </View>
   );
 };
@@ -102,6 +100,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'black', // Background color of the button
     paddingVertical: 15, // Adjust padding as needed
     paddingHorizontal: 20, // Adjust padding as needed
+  },
+  buttonWrappe: {
+    borderRadius: 50, // Apply borderRadius to the wrapper
+    backgroundColor: 'black', // Background color of the button
+    paddingVertical: 15, // Adjust padding as needed
+    paddingHorizontal: 20,
+    marginTop:5 // Adjust padding as needed
   },
   buttonText: {
     color: '#fff', // Text color

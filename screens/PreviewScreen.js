@@ -8,27 +8,30 @@ const PreviewScreen = ({ route }) => {
   const { content_id } = route.params;
   const [previews, setPreviews] = useState([]);
 
-  const getImageSource = (icon) => {
-    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
+  useEffect(() => {
+    if (content_id) {
+      console.log(`Fetching previews for content_id: ${content_id}`);
+      fetchPreviews(content_id);
+    } else {
+      console.error('content_id is undefined');
+    }
+  }, [content_id]);
+  
+  const fetchPreviews = async (id) => {
+    try {
+      const response = await axios.get(`${API_HOST}/api/previews/${id}`);
+      setPreviews(response.data);
+      console.log("API response data:", response.data);
+    } catch (error) {
+      console.error("Error fetching previews:", error);
+    }
   };
 
-  useEffect(() => {
-    // Fetch previews based on content_id
-    const fetchPreviews = async () => {
-      try {
-        const response = await axios.get(`${API_HOST}/api/previews/${content_id}`); // Replace with your actual API endpoint
-        setPreviews(response.data); // Assuming data is an array of previews objects
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching previews:", error);
-        // Handle error state or retry logic if needed
-      }
-    };
+  const getImageSource = (icon) => {
+    return { uri: `${API_HOST}/storage/${icon}` };
+  };
 
-    fetchPreviews();
-  }, [content_id]); // Ensure content_id is in the dependency array
-
-  function renderPreviews() {
+  const renderPreviews = () => {
     if (previews.length === 0) {
       return (
         <View style={styles.center}>
@@ -45,7 +48,7 @@ const PreviewScreen = ({ route }) => {
         {previews.map((preview) => (
           <View key={preview.preview_id} style={styles.previewContainer}>
             <Image
-              source={getImageSource(preview.path)} // Correctly accessing the path from preview object
+              source={getImageSource(preview.path)}
               resizeMode="contain"
               style={styles.previewImage}
             />
@@ -53,7 +56,7 @@ const PreviewScreen = ({ route }) => {
         ))}
       </ScrollView>
     );
-  }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.black }}>
@@ -73,7 +76,7 @@ const styles = StyleSheet.create({
   },
   previewImage: {
     width: "100%",
-    height: 300, // Adjust height as needed
+    height: 300,
     marginBottom: SIZES.padding,
   },
   center: {

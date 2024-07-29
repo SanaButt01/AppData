@@ -4,8 +4,10 @@ import { icons } from "../constants";
 import { launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
+import LinearGradient from 'react-native-linear-gradient';
 
 const Register = ({ navigation }) => {
+  const localImage2 = require("../assets/sup.jpg");
   const [name, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,7 +35,7 @@ const Register = ({ navigation }) => {
       quality: 1,
       includeBase64: true,
     };
-  
+
     launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('User canceled image selection');
@@ -52,6 +54,11 @@ const Register = ({ navigation }) => {
     setErrorPassword('');
     setErrorConfirmPassword('');
     setErrorEmail('');
+
+    if (!name.trim()) {
+      setErrorUsername('Please enter your username.');
+      valid = false;
+    }
 
     if (!email.trim()) {
       setErrorEmail('Please enter your email.');
@@ -136,98 +143,105 @@ const Register = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-  {icon ? (
-    <View>
-      <Image
-        style={styles.profileImage}
-        source={{ uri: `data:${icon.type};base64,${icon.base64}` }}
-      />
-      <TouchableOpacity style={styles.cameraOverlay} onPress={handleCameraIconPress}>
-        <Image source={icons.camera} style={styles.cameraIcon} />
-      </TouchableOpacity>
-      {showText && (
-        <View style={styles.optionsContainer}>
-          <TouchableOpacity onPress={removePhoto}>
-            <Text style={styles.optionText}>Remove Photo</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={selectImage}>
-            <Text style={styles.optionText}>Change Photo</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
-  ) : (
-    <TouchableOpacity onPress={selectImage}>
-      <View style={styles.uploadContainer}>
-        <Text style={styles.uploadButtonText}>Upload Photo</Text>
-      </View>
-    </TouchableOpacity>
-  )}
-</View>
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-        <View style={styles.inputContainer}>
-          <Image source={icons.page_icon} style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            placeholderTextColor="#888"
-            onChangeText={handleNameChange}
-            value={name}
-          />
-        </View>
-        {errorUsername ? <Text style={styles.errorText}>{errorUsername}</Text> : null}
-        <View style={styles.inputContainer}>
-          <Image source={icons.email2} style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#888"
-            onChangeText={handleEmailChange}
-            value={email}
-            keyboardType="email-address"
-          />
-        </View>
-        {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
-        <View style={styles.inputContainer}>
-          <Image source={icons.pass2} style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#888"
-            onChangeText={handlePasswordChange}
-            value={password}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
-            <Image source={icons.back_arrow_icon} style={styles.showPasswordIcon} />
-          </TouchableOpacity>
-        </View>
-        {errorPassword ? <Text style={styles.errorText}>{errorPassword}</Text> : null}
-        <View style={styles.inputContainer}>
-          <Image source={icons.pass2} style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            placeholderTextColor="#888"
-            onChangeText={handleConfirmPasswordChange}
-            value={confirmPassword}
-            secureTextEntry={!showConfirmPassword}
-          />
-          <TouchableOpacity onPress={toggleShowConfirmPassword} style={styles.showPasswordButton}>
-            <Image source={icons.back_arrow_icon} style={styles.showPasswordIcon} />
-          </TouchableOpacity>
-        </View>
-        {errorConfirmPassword ? <Text style={styles.errorText}>{errorConfirmPassword}</Text> : null}
-        <TouchableOpacity style={styles.button} onPress={handleSign}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <View style={styles.loginContainer}>
-            <Text style={styles.loginText}>Already have an account?</Text>
-            <Text style={styles.loginLink}>Login</Text>
+        <View style={styles.cardContainer}>
+        <View style={styles.imageContainer}>
+        <Image source={localImage2} style={styles.topImage} />
+          <View style={styles.logoContainer}>
+            {icon ? (
+              <View>
+                <Image
+                  style={styles.profileImage}
+                  source={{ uri: `data:${icon.type};base64,${icon.base64}` }}
+                />
+                <TouchableOpacity style={styles.cameraOverlay} onPress={handleCameraIconPress}>
+                  <Image source={icons.camera} style={styles.cameraIcon} />
+                </TouchableOpacity>
+                {showText && (
+                  <View style={styles.optionsContainer}>
+                    <TouchableOpacity onPress={removePhoto}>
+                      <Text style={styles.optionText}>Remove Photo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={selectImage}>
+                      <Text style={styles.optionText}>Change Photo</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <TouchableOpacity onPress={selectImage}>
+                <View style={styles.uploadContainer}>
+                <Image source={icons.camera} style={styles.cameraIcon} />
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
-        </TouchableOpacity>
+          <View style={styles.formContainer}>
+            <View style={styles.inputContainer}>
+              <Image source={icons.page_icon} style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                placeholderTextColor="#888"
+                onChangeText={handleNameChange}
+                value={name}
+              />
+            </View>
+            {errorUsername ? <Text style={styles.errorText}>{errorUsername}</Text> : null}
+            <View style={styles.inputContainer}>
+              <Image source={icons.email2} style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#888"
+                onChangeText={handleEmailChange}
+                value={email}
+                keyboardType="email-address"
+              />
+            </View>
+            {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
+            <View style={styles.inputContainer}>
+              <Image source={icons.pass2} style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#888"
+                onChangeText={handlePasswordChange}
+                value={password}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
+                <Image source={icons.back_arrow_icon} style={styles.showPasswordIcon} />
+              </TouchableOpacity>
+            </View>
+            {errorPassword ? <Text style={styles.errorText}>{errorPassword}</Text> : null}
+            <View style={styles.inputContainer}>
+              <Image source={icons.pass2} style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password"
+                placeholderTextColor="#888"
+                onChangeText={handleConfirmPasswordChange}
+                value={confirmPassword}
+                secureTextEntry={!showConfirmPassword}
+              />
+              <TouchableOpacity onPress={toggleShowConfirmPassword} style={styles.showPasswordButton}>
+                <Image source={icons.back_arrow_icon} style={styles.showPasswordIcon} />
+              </TouchableOpacity>
+            </View>
+            {errorConfirmPassword ? <Text style={styles.errorText}>{errorConfirmPassword}</Text> : null}
+            <TouchableOpacity style={styles.button} onPress={handleSign}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <View style={styles.loginContainer}>
+                <Text style={styles.loginText}>Already have an account?</Text>
+                <Text style={styles.loginLink}>Login</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+        </View>
       </ScrollView>
     </View>
   );
@@ -236,26 +250,40 @@ const Register = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: 'black',
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 3,
+  },
+  cardContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 20,
+    width: '90%',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
   },
   logoContainer: {
     alignItems: 'center',
-    padding: 5,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    marginBottom: 20,
+  },
+  imageContainer: {
+    alignItems: 'center',
+ 
+  },
+  topImage: {
+    width: '100%',
+    height: 300,
+    resizeMode: 'cover',
+       marginBottom: -150,
   },
   profileImage: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     borderRadius: 75,
     borderWidth: 2,
     borderColor: '#000',
@@ -265,9 +293,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   uploadContainer: {
-    position: 'relative',
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     borderRadius: 75,
     borderWidth: 2,
     borderColor: '#888',
@@ -277,51 +304,46 @@ const styles = StyleSheet.create({
   },
   cameraOverlay: {
     position: 'absolute',
-    bottom: 0,
-    right: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Adjust the background color and opacity as needed
-    borderRadius: 999, // A large value to ensure it's a circle
+    bottom: 8,
+    right: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 999,
+    padding: 5,
   },
   cameraIcon: {
     width: 24,
     height: 24,
   },
   uploadButtonText: {
-    color: '#555555',
+    color: '#555',
     fontSize: 16,
   },
   optionsContainer: {
     position: 'absolute',
-    bottom: 50, // Adjust this value to position the options
-    right: -10, // Adjust this value to position the options
+    bottom: 70,
+    right: 10,
     backgroundColor: '#FFF',
     padding: 10,
     borderRadius: 5,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 5, // For Android shadow
+    elevation: 5,
   },
   optionText: {
     color: '#000',
     fontSize: 16,
     marginVertical: 5,
   },
+  formContainer: {
+    width: '100%',
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '85%',
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 25,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#FFF',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   icon: {
     width: 24,
@@ -332,7 +354,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     color: '#333',
-    fontFamily: 'Roboto-Regular',
   },
   showPasswordButton: {
     position: 'absolute',
@@ -346,37 +367,38 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#FF0000',
     fontSize: 14,
-    marginBottom: 10,
   },
   button: {
     backgroundColor: '#000000',
-    width: '80%',
+    width: '100%',
     borderRadius: 25,
     paddingVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
-    marginTop: 10,
+    shadowRadius: 5,
+    elevation: 3,
+    marginVertical: 10,
   },
   buttonText: {
-    color: '#FFF',
-    fontFamily: 'Roboto-Bold',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   loginContainer: {
     flexDirection: 'row',
-    marginTop: 20,
+    justifyContent: 'center',
+    marginTop: -4,
   },
   loginText: {
-    color: '#333',
+    color: '#666',
     fontSize: 14,
   },
   loginLink: {
-    color: 'black',
+    color: '#000',
     fontSize: 14,
+    fontWeight: 'bold',
     marginLeft: 5,
   },
 });
