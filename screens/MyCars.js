@@ -26,6 +26,19 @@ const MyCarousel = ({navigation}) => {
       >
         <View style={styles.slide}>
           <Image source={localImage1} style={styles.image} />
+        
+            <View style={styles.buttonContainer}>
+               <TouchableOpacity style={styles.buttonWrapper} 
+               onPress={()=>navigation.navigate('Signup')}>
+                <Text style={styles.buttonText}>Sign up</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.buttonWrappe} 
+               onPress={()=>navigation.navigate('Login')}>
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+            </View>
+      
         </View>
   
         <View style={styles.slide}>
@@ -46,17 +59,7 @@ const MyCarousel = ({navigation}) => {
           )}
         </View>
       </ScrollView>
-      <View style={styles.pagination}>
-        {[...Array(4)].map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              index === currentPage && styles.paginationDotActive,
-            ]}
-          />
-        ))}
-      </View>
+
     </View>
   );
 };
@@ -100,7 +103,16 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     borderRadius: 50, // Apply borderRadius to the wrapper
     backgroundColor: 'black', // Background color of the button
-    paddingVertical: 15, // Adjust padding as needed
+    paddingVertical: 20, // Adjust padding as needed
+    paddingHorizontal: 20, // Adjust padding as needed
+    marginBottom:5
+  },
+
+
+  buttonWrappe: {
+    borderRadius: 50, // Apply borderRadius to the wrapper
+    backgroundColor: 'black', // Background color of the button
+    paddingVertical: 20, // Adjust padding as needed
     paddingHorizontal: 20, // Adjust padding as needed
   },
   buttonText: {

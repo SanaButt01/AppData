@@ -4,7 +4,16 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 
-const SidePanel = () => {
+const Home = () => {
+
+  const texts = [
+    'Shop now, save more !',
+    'Special discounts !',
+    "Don't miss out !",
+    'Limited time offers !'
+  ];
+
+const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -26,17 +35,20 @@ const SidePanel = () => {
     setSelectedCategory(categoryId);
     navigation.navigate('BookScreen', { categoryId });
   };
-
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
+    }, 1000); // Change message every second
+    return () => clearInterval(interval);
+  }, []);
   const getImageSource = (icon) => {
     return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.categoryHeaderTextContainer}>
-        <Text style={styles.categoryHeaderText}>Categories</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.categoriesContainer}>
+    
+   
         {categories.map(category => (
           <TouchableOpacity
             key={category.category_id}
@@ -44,63 +56,49 @@ const SidePanel = () => {
             style={styles.categoryItem}
           >
             <Image source={getImageSource(category.icon)} style={styles.categoryImage} />
-            <Text style={styles.menuItemText}>{category.type}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+
+      <View style={styles.header}>
+      <Text style={styles.headerMessage}>{texts[currentTextIndex]}</Text>
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 40,
+    backgroundColor: 'black',
+    elevation: 4,
+    borderTopLeftRadius:100,
+    borderBottomRightRadius:100
+  },
+  headerMessage: {
+    fontSize: 23,
+    color:"white",
+    fontFamily: 'PlayfairDisplay-Bold',
+  },
   container: {
+    flex: 1,
     backgroundColor: 'white',
     padding: 20,
-    width: '100%',
-    alignSelf: 'center',
-    borderRadius: 15,
-  },
-  categoriesContainer: {
-    flexGrow: 1,
-    flexDirection: 'row',
-    paddingBottom: 5,
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
   categoryItem: {
-    width: '48%',
-    marginTop: 10,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 15,
-    padding: 10,
+    backgroundColor: 'white',
+    padding: 20,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  menuItemText: {
-    fontSize: 15,
-    color: '#333',
-    fontFamily: 'PlayfairDisplay-Bold',
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  categoryHeaderTextContainer: {
-    width: '100%',
-  },
-  categoryHeaderText: {
-    fontSize: 28,
-    color: 'black',
-    fontFamily: 'PlayfairDisplay-Bold',
+    shadowColor: 'white',
   },
   categoryImage: {
-    width: '100%',
-    height: 120,
-    borderRadius: 15,
-    marginBottom: 10,
+    width: 250,
+    height: 400,
+    borderRadius: 25,
+
   },
 });
 
-export default SidePanel;
+export default Home;

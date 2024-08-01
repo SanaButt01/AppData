@@ -6,7 +6,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { StripeProvider } from '@stripe/stripe-react-native';
 
 import { icons } from './constants';
-
+import UserProfile from './screens/UserProfile'
 import { BookDetail, Home } from './screens/';
 import Register from './screens/Register';
 import ShoppingCart from './screens/ShoppingCart';
@@ -15,10 +15,13 @@ import BookData from './screens/BookData';
 import FeedBack from './screens/FeedBack';
 import AddressForm from './screens/AddressForm';
 import MyCars from './screens/MyCars';
-import PreviewScreen from './screens/PreviewScreen'
+import PreviewScreen from './screens/PreviewScreen';
+import ContactUsScreen from './screens/ContactUsScreen';
+import BookScreen from './screens/BookScreen';
+import AboutUsScreen from './screens/AboutUsScreen';
+import ForgotPassword from './screens/ForgotPassword';
 
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
-import BookScreen from './screens/BookScreen';
 
 const theme = {
     ...DefaultTheme,
@@ -31,68 +34,13 @@ const theme = {
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const App = () => {
-    LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
-
-    useEffect(() => {
-        SplashScreen.hide();
-    }, []);
-
-    const handleLogout = () => {
-        // Implement your logout logic here
-        console.log('User logged out');
-        // Example: Clear user session, navigate to login screen, etc.
-    };
-
-    return (
-      <StripeProvider publishableKey="pk_test_51Ok46fKWEwsvQglH9hhqE9YhYSWHDpXG84EM5EaASAA4dnyBSAPzomo4ZDfcWJvK9EloBaQ8eOASrlgoBZhUBq7d00X4PRp02d">
-      <NavigationContainer theme={theme}>
-          <Stack.Navigator
-              initialRouteName="MyCars"
-              screenOptions={{
-                  headerShown: false,
-              }}
-          >
-              <Stack.Screen name="DrawerScreens" component={DrawerScreens} />
-              <Stack.Screen name="AddressForm" component={AddressForm} options={{ headerShown: true }} />
-              <Stack.Screen name="BookDetail" component={BookDetail} options={{ headerShown: true }} />
-              <Stack.Screen name="BookScreen" component={BookScreen} options={{ headerShown: true }}/>
-              <Stack.Screen name="PreviewScreen" component={PreviewScreen} options={{ headerShown: true }}/>
-          </Stack.Navigator>
-      </NavigationContainer>
-  </StripeProvider>
-    );
-};
-
 const CustomDrawerContent = (props) => {
-    const { navigation } = props;
-
-    const handleLogout = () => {
-        // Implement your logout logic here
-        console.log('User logged out');
-        // Example: Clear user session, navigate to login screen, etc.
-        navigation.navigate('Login'); // Navigate to Login screen after logout
-    };
-
     return (
         <DrawerContentScrollView {...props}>
             <View style={{ alignItems: 'center', marginTop: 40 }}>
                 <Image source={icons.logo2} style={{ width: 110, height: 150 }} />
             </View>
             <DrawerItemList {...props} />
-            <TouchableOpacity onPress={handleLogout}>
-                <DrawerItem
-                    label="Logout"
-                    onPress={handleLogout}
-                    icon={() => <Image source={icons.logout} style={{alignItems: 'center', width: 35, height: 35 }} />}
-                    labelStyle={{
-                        fontSize: 20,
-                        color: 'black',
-                        fontFamily: 'PlayfairDisplay-Bold',
-                        marginLeft:-20
-                    }}
-                />
-            </TouchableOpacity>
         </DrawerContentScrollView>
     );
 };
@@ -100,7 +48,7 @@ const CustomDrawerContent = (props) => {
 const DrawerScreens = () => {
     return (
         <Drawer.Navigator
-            initialRouteName={'MyCars'}
+            // initialRouteName={'Dashboard'}
             drawerContent={CustomDrawerContent}
             screenOptions={{
                 headerShown: true,
@@ -138,7 +86,7 @@ const DrawerScreens = () => {
                 component={Home}
                 options={{
                     drawerIcon: ({ focused, color, size }) => (
-                        <Image source={icons.home} style={{ width: 30, height: 35 }} />
+                        <Image source={icons.sale} style={{ width: 30, height: 45 }} />
                     ),
                 }}
             />
@@ -151,8 +99,17 @@ const DrawerScreens = () => {
                     ),
                 }}
             />
-            <Drawer.Screen
-                name="Feedback"
+              <Drawer.Screen
+                name="Profile"
+                component={UserProfile}
+                options={{
+                    drawerIcon: ({ focused, color, size }) => (
+                        <Image source={icons.page_icon} style={{ width: 35, height: 35 }} />
+                    ),
+                }}
+            />
+                <Drawer.Screen
+                name="FeedBack"
                 component={FeedBack}
                 options={{
                     drawerIcon: ({ focused, color, size }) => (
@@ -161,36 +118,62 @@ const DrawerScreens = () => {
                 }}
             />
             <Drawer.Screen
-                name="Signup"
-                component={Register}
+                name="Contact us"
+                component={ContactUsScreen}
                 options={{
-                    drawerLabel: () => null,
-                    title: null,
-                    drawerIcon: () => null,
-                    headerShown: false,
+                    drawerIcon: ({ focused, color, size }) => (
+                        <Image source={icons.contact} style={{ width: 35, height: 35 }} />
+                    ),
                 }}
             />
             <Drawer.Screen
-                name="Login"
-                component={LoginForm}
+                name="About us"
+                component={AboutUsScreen}
                 options={{
-                    drawerLabel: () => null,
-                    title: null,
-                    drawerIcon: () => null,
-                    headerShown: false,
-                }}
-            />
-            <Drawer.Screen
-                name="MyCars"
-                component={MyCars}
-                options={{
-                    drawerLabel: () => null,
-                    title: null,
-                    drawerIcon: () => null,
-                    headerShown: false,
+                    drawerIcon: ({ focused, color, size }) => (
+                        <Image source={icons.About} style={{ width: 35, height: 35 }} />
+                    ),
                 }}
             />
         </Drawer.Navigator>
+    );
+};
+
+const App = () => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+
+    useEffect(() => {
+        SplashScreen.hide();
+    }, []);
+
+    const handleLogout = () => {
+        // Implement your logout logic here
+        console.log('User logged out');
+        // Example: Clear user session, navigate to login screen, etc.
+    };
+
+    return (
+      <StripeProvider publishableKey="pk_test_51Ok46fKWEwsvQglH9hhqE9YhYSWHDpXG84EM5EaASAA4dnyBSAPzomo4ZDfcWJvK9EloBaQ8eOASrlgoBZhUBq7d00X4PRp02d">
+      <NavigationContainer theme={theme}>
+          <Stack.Navigator
+              initialRouteName="MyCars"
+              screenOptions={{
+                  headerShown: false,
+              }}
+          >
+              <Stack.Screen name="DrawerScreens" component={DrawerScreens} />
+              <Stack.Screen name="AddressForm" component={AddressForm} options={{ headerShown: true }} />
+              <Stack.Screen name="BookDetail" component={BookDetail} options={{ headerShown: true }} />
+              <Stack.Screen name="BookScreen" component={BookScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="PreviewScreen" component={PreviewScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="MyCars" component={MyCars} options={{ headerShown: false }}/>
+              <Stack.Screen name="Signup" component={Register} options={{ headerShown: false }}/>
+              <Stack.Screen name="Login" component={LoginForm} options={{ headerShown: false }}/>
+              <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }}/>
+              <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }}/>
+          </Stack.Navigator>
+      </NavigationContainer>
+  </StripeProvider>
     );
 };
 

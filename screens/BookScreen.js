@@ -8,21 +8,39 @@ import { COLORS, FONTS, SIZES, images, icons } from '../constants';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 
-
 const BookScreen = ({ route }) => {
   const { categoryId } = route.params;
   const [books, setBooks] = useState([]);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const cartData = useSelector((state) => state.reducer);
-  const [cartItems,setCartItems]=useState(0)
+  const [cartItems, setCartItems] = useState(0);
   const [addedToCart, setAddedToCart] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [booksData, setBooksData] = useState([]);
+  
+  // Array of texts to rotate through
+
+    const texts = [
+      'Top books!',
+      'New arrivals!',
+      'Best deals!',
+      'Hidden gems!'
+    ];
+
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+
   const goToCart = () => {
     navigation.navigate('ShoppingCart');
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
+    }, 1000); // Change message every second
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Simulate fetching books based on the selected category ID
@@ -45,18 +63,15 @@ const BookScreen = ({ route }) => {
     });
   }, [categoryId]); // Ensure categoryId is in the dependency array
 
-
-  const navigateToBookDetail = (bookId) => {
-    // Pass booksData to BookDetail route
-    navigation.navigate('BookDetail', { book_id: bookId, booksData });
+  const navigateToBookDetail = (book) => {
+    // Pass book details to BookDetail route
+    navigation.navigate('BookDetail', { book });
   };
 
+  useEffect(() => {
+    setCartItems(cartData.length)
+  }, [cartData]); // this useState update the value only when it is called that's why we write [cartdata]
 
-
-   useEffect(()=>{
-        setCartItems(cartData.length)
-    },[cartData])// this useState update the value only when it is called thats why we write [cartdata]
-    
   useEffect(() => {
     // Initialize addedToCart state based on cartData
     const updatedAddedToCart = {};
@@ -93,7 +108,7 @@ const BookScreen = ({ route }) => {
   };
 
   const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item.book_id)}>
+    <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item)}>
       <View style={styles.imageContainer}>
         <Image source={getImageSource(item.path)} resizeMode="cover" style={styles.bookImage} />
       </View>
@@ -102,10 +117,10 @@ const BookScreen = ({ route }) => {
         <Text style={styles.author}>By: {item.author}</Text>
         <Text style={styles.price}>Rs. {item.price}</Text>
         {item.disc && (
-              <View style={styles.discountContainer}>
-                <Text style={styles.discountText}>{item.disc}%Off</Text>
-              </View>
-            )}
+          <View style={styles.discountContainer}>
+            <Text style={styles.discountText}>{item.disc}%Off</Text>
+          </View>
+        )}
         <Button
           onPress={() => handleAddtoCart(item)}
           color='black'
@@ -119,18 +134,18 @@ const BookScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerMessage}>{texts[currentTextIndex]}</Text>
+        <TouchableOpacity style={styles.cartIconContainer} onPress={goToCart}>
+          <Image
+            source={icons.bookmark_icon}
+            resizeMode="contain"
+            style={styles.cartIcon}
+          />
+          <Text style={styles.cartItemCount}>{cartItems}</Text>
+        </TouchableOpacity>
+      </View>
       <SearchBar onSearch={handleSearch} />
-      <TouchableOpacity style={{ height: 30 ,marginTop:70,marginLeft:5}} onPress={goToCart}>
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Image
-        source={icons.bookmark_icon}
-        resizeMode="contain"
-        style={{ width: 45, height: 40 }}
-      />
-      <Text style={{ fontFamily: 'PlayfairDisplay-Bold', color: 'black', marginRight: 10, fontSize: 15 }}>{cartItems}</Text>
-    </View>
-  </TouchableOpacity>
-  
       <FlatList
         data={isSearching ? searchResults : books}
         keyExtractor={item => item.book_id.toString()}
@@ -146,8 +161,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 40,
+    backgroundColor: 'black',
+    elevation: 4,
+    borderBottomLeftRadius:84,
+    borderBottomRightRadius:84
+  },
+  headerMessage: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color:"white"
+  },
+  cartIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 50,
+  },
+  cartIcon: {
+    width: 44,
+    height: 44,
+    marginRight: 4,
+  },
+  cartItemCount: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   bookList: {
-    paddingVertical: 30,
+    paddingVertical: 70,
     paddingHorizontal: 20,
   },
   bookContainer: {
@@ -178,7 +223,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   bookTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
   },
@@ -187,15 +232,15 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black,
     marginBottom: 5,
-},
+  },
   author: {
     fontSize: 14,
     color: '#666',
   },
   discountContainer: {
     position: 'absolute',
-    top: 1,
-    right: 5,
+    top: -10,
+    right: 250,
     backgroundColor: 'red',
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -206,7 +251,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  
 });
 
 export default BookScreen;

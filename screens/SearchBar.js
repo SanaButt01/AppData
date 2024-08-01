@@ -1,63 +1,50 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet,Image,TouchableOpacity } from 'react-native';
-import { icons } from "../constants";
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, StyleSheet, Image } from 'react-native';
+import { icons } from '../constants';
 
 const SearchBar = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = () => {
-    // Perform search action here, passing the searchQuery to the parent component
+  useEffect(() => {
     onSearch(searchQuery);
-  };
-
-  // Trigger search action when searchQuery changes
-  React.useEffect(() => {
-    handleSearch();
   }, [searchQuery]);
 
   return (
     <View style={[styles.container, { width: 340, flexDirection: 'row' }]}>
-     <TextInput
-  style={styles.input}
-  placeholder="Search by Title|Author Name..."
-  value={searchQuery}
-  onChangeText={(text) => {
-    setSearchQuery(text); // Update searchQuery state
-  }}
-  returnKeyType="search" // Set returnKeyType to "search"
-  onSubmitEditing={() => handleSearch(searchQuery)} // Call handleSearch when the search button is pressed
-/>
-  <Image
-    source={icons.search_icon}
-    style={{
-      width:20,
-      height: 20,
-      alignSelf: 'center',
-      marginLeft: -35,
-    }}
-  />
+      <TextInput
+        style={styles.input}
+        placeholder="Search by Title|Author Name..."
+        value={searchQuery}
+        onChangeText={(text) => setSearchQuery(text)}
+        returnKeyType="search"
+        onSubmitEditing={() => onSearch(searchQuery)}
+      />
+      <Image
+        source={icons.search_icon}
+        style={{ width: 20, height: 20, alignSelf: 'center', marginLeft: -35 }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 7,
+    padding: 15,
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 50,
     position: 'absolute',
-    alignSelf: "center",
+    alignSelf: 'center',
     zIndex: 999,
-    // marginTop: 10,
-    borderColor: "black",
-    borderWidth: 2,
+    marginTop: 100,
+    borderColor: 'black',
+    borderWidth: 1,
   },
   input: {
     height: 35,
     borderColor: 'white',
     borderWidth: 1,
     paddingLeft: 5,
-    width: '100%', // Fill the available width
+    width: '100%',
     fontFamily: 'PlayfairDisplay-Bold',
   },
 });

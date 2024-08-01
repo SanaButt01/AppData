@@ -1,51 +1,61 @@
 import React, { useState } from 'react';
-import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { icons, COLORS } from "../constants";
+import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, ToastAndroid, Animated } from 'react-native';
+import { icons } from "../constants";
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 
 const Login = ({ navigation }) => {
+  const localImage2 = require("../assets/sup.jpg");
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [errorEmail, setErrorEmail] = useState('');
+  const [errorPassword, setErrorPassword] = useState('');
 
-  const handlePasswordChange = (text) => {
-    setPassword(text.trimStart());
-  };
+  // Animation setup
+  const [fadeAnim] = useState(new Animated.Value(0));
 
-  const handleEmailChange = (text) => {
-    setEmail(text.trimStart());
-  };
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const handlePasswordChange = (text) => setPassword(text.trimStart());
+  const handleEmailChange = (text) => setEmail(text.trimStart());
+  const toggleShowPassword = () => setShowPassword(!showPassword);
 
   const validateForm = () => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    let valid = true;
+    setErrorEmail('');
+    setErrorPassword('');
 
-    if (!password.trim() || !email.trim()) {
-      Alert.alert('Please enter all fields.');
-      return false;
+    if (!email.trim()) {
+      setErrorEmail('Please enter your email.');
+      valid = false;
     } else if (!validateEmail(email)) {
-      Alert.alert('Please enter a valid email address.');
-      return false;
-    } else if (password.length < 8) {
-      Alert.alert('Password must be at least 8 characters long.');
-      return false;
-    } else if (!passwordRegex.test(password)) {
-      Alert.alert('Password must contain a combination of characters, numbers, and symbols.');
-      return false;
+      setErrorEmail('Please enter a valid email address.');
+      valid = false;
     }
 
-    return true;
+    if (!password.trim()) {
+      setErrorPassword('Please enter your password.');
+      valid = false;
+    } else if (password.length < 8) {
+      setErrorPassword('Password must be at least 8 characters long.');
+      valid = false;
+    } else if (!passwordRegex.test(password)) {
+      setErrorPassword('Password must contain a combination of characters and numbers.');
+      valid = false;
+    }
+
+    return valid;
   };
 
-  const validateEmail = (email) => {
-    const regex = /\S+@gmail\.com/;
-    return regex.test(email);
-  };
+  const validateEmail = (email) => /\S+@gmail\.com/.test(email);
 
   const handleSign = async () => {
     if (validateForm()) {
@@ -57,68 +67,74 @@ const Login = ({ navigation }) => {
 
         if (response.status === 200) {
           // Login successful
-          navigation.navigate('Dashboard');
+          ToastAndroid.show('Login successful!', ToastAndroid.SHORT);
+          navigation.navigate('DrawerScreens', { screen: 'Dashboard' });
         } else {
           // Handle other status codes if needed
-          Alert.alert('Login failed. Please check your credentials.');
+          ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.SHORT);
         }
       } catch (error) {
         console.error('Error logging in:', error);
-        Alert.alert('Login failed. Please try again later.');
+        ToastAndroid.show('Login failed. Please try again later.', ToastAndroid.SHORT);
       }
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image
-          source={icons.logo2}
-          style={styles.logo}
-        />
-      </View>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboardAvoidingView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.inputContainer}>
-            <Image source={icons.email2} style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#888"
-              onChangeText={handleEmailChange}
-              value={email}
-              keyboardType="email-address"
-            />
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+        <View style={styles.cardContainer}>
+          <View style={styles.imageContainer}>
+            <Image source={localImage2} style={styles.topImage} />
+            <View style={styles.logoContainer}>
+              <Animated.Text style={[styles.welcomeText, { opacity: fadeAnim }]}>
+                Welcome Back!
+              </Animated.Text>
+            </View>
+            <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <Image source={icons.email2} style={styles.icon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="#888"
+                  onChangeText={handleEmailChange}
+                  value={email}
+                  keyboardType="email-address"
+                />
+              </View>
+              {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
+              <View style={styles.inputContainer}>
+                <Image source={icons.pass2} style={styles.icon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="#888"
+                  onChangeText={handlePasswordChange}
+                  value={password}
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
+                  <Image source={icons.back_arrow_icon} style={styles.showPasswordIcon} />
+                </TouchableOpacity>
+              </View>
+              {errorPassword ? <Text style={styles.errorText}>{errorPassword}</Text> : null}
+              <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleSign}>
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+                <View style={styles.registerContainer}>
+                  <Text style={styles.registerText}>Don't have an account?</Text>
+                  <Text style={styles.registerLink}>Register</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <View style={styles.inputContainer}>
-            <Image source={icons.pass2} style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#888"
-              onChangeText={handlePasswordChange}
-              value={password}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
-              <Image source={icons.back_arrow_icon} style={styles.showPasswordIcon} />
-            </TouchableOpacity>
-          </View>
-
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-          <TouchableOpacity style={styles.button} onPress={handleSign}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -126,29 +142,52 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  logo: {
-    height: 180,
-    width: 130,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
+    backgroundColor: 'black',
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+  },
+  cardContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 10,
+    paddingBottom: 45,
+    width: '90%',
+    height: '95%',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  imageContainer: {
+    alignItems: 'center',
+  },
+  topImage: {
+    width: '100%',
+    height: 350,
+    resizeMode: 'cover',
+    marginBottom: -70,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  welcomeText: {
+    color: '#000', // Black text
+    fontSize: 28,
+    fontWeight: 'bold',
+    textShadowColor: '#ddd',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  formContainer: {
+    width: '100%',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '85%',
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#CCC',
@@ -160,6 +199,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: '100%',
   },
   icon: {
     width: 24,
@@ -170,7 +210,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     color: '#333',
-    fontFamily: 'Roboto-Regular',
   },
   showPasswordButton: {
     position: 'absolute',
@@ -181,27 +220,49 @@ const styles = StyleSheet.create({
     height: 24,
     tintColor: '#888',
   },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  forgotPasswordText: {
+    color: '#000',
+    textAlign: 'right',
+    marginBottom: 20,
+    fontSize: 14,
+  },
   button: {
     backgroundColor: '#000000',
-    width: '80%',
+    width: '100%',
     borderRadius: 25,
     paddingVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
-    marginTop: 10,
+    shadowRadius: 5,
+    elevation: 3,
+    marginVertical: 0,
   },
   buttonText: {
-    color: '#FFF',
-    fontFamily: 'Roboto-Bold',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
+  registerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  registerText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  registerLink: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
 });
 
