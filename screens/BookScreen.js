@@ -21,13 +21,12 @@ const BookScreen = ({ route }) => {
   const [booksData, setBooksData] = useState([]);
   
   // Array of texts to rotate through
-
-    const texts = [
-      'Top books!',
-      'New arrivals!',
-      'Best deals!',
-      'Hidden gems!'
-    ];
+  const texts = [
+    'Top books!',
+    'New arrivals!',
+    'Best deals!',
+    'Hidden gems!'
+  ];
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
@@ -35,19 +34,7 @@ const BookScreen = ({ route }) => {
     navigation.navigate('ShoppingCart');
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
-    }, 1000); // Change message every second
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    // Simulate fetching books based on the selected category ID
-    const filteredBooks = booksData.filter(book => book.category_id === categoryId);
-    setBooks(filteredBooks);
-    
-    // Replace the hardcoded booksData with API call below:
+  const fetchBooks = () => {
     axios.get(`${API_HOST}/api/books`, {
       params: {
         category_id: categoryId
@@ -61,16 +48,24 @@ const BookScreen = ({ route }) => {
       console.error("Error fetching books:", error);
       // Handle error case
     });
-  }, [categoryId]); // Ensure categoryId is in the dependency array
-
-  const navigateToBookDetail = (book) => {
-    // Pass book details to BookDetail route
-    navigation.navigate('BookDetail', { book });
   };
 
   useEffect(() => {
-    setCartItems(cartData.length)
-  }, [cartData]); // this useState update the value only when it is called that's why we write [cartdata]
+    fetchBooks();
+    const interval = setInterval(fetchBooks, 1000); // Polling every 5 seconds
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [categoryId]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
+    }, 1000); // Change message every second
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    setCartItems(cartData.length);
+  }, [cartData]);
 
   useEffect(() => {
     // Initialize addedToCart state based on cartData
@@ -89,6 +84,10 @@ const BookScreen = ({ route }) => {
       // If not added to cart, add it
       dispatch(addtocart(item));
     }
+  };
+  const navigateToBookDetail = (book) => {
+    // Pass book details to BookDetail route
+    navigation.navigate('BookDetail', { book });
   };
 
   const handleSearch = (query) => {
@@ -168,13 +167,13 @@ const styles = StyleSheet.create({
     padding: 40,
     backgroundColor: 'black',
     elevation: 4,
-    borderBottomLeftRadius:84,
-    borderBottomRightRadius:84
+    borderBottomLeftRadius: 84,
+    borderBottomRightRadius: 84
   },
   headerMessage: {
     fontSize: 23,
     fontWeight: 'bold',
-    color:"white"
+    color: "white"
   },
   cartIconContainer: {
     flexDirection: 'row',
@@ -190,6 +189,7 @@ const styles = StyleSheet.create({
   cartItemCount: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: "black"
   },
   bookList: {
     paddingVertical: 70,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.5,
     shadowRadius: 3,
     elevation: 2,
   },
@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
+    color: "black"
   },
   price: {
     fontSize: SIZES.body3,

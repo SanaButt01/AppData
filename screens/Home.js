@@ -13,12 +13,12 @@ const Home = () => {
     'Limited time offers !'
   ];
 
-const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
+  const fetchCategories = () => {
     axios.get(`${API_HOST}/api/categories`)
       .then(response => {
         const data = response.data;
@@ -29,38 +29,44 @@ const [currentTextIndex, setCurrentTextIndex] = useState(0);
       .catch(error => {
         console.error('Error fetching categories:', error);
       });
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    const interval = setInterval(fetchCategories, 1000); // Polling every 5 seconds
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
+    }, 1000); // Change message every second
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
     navigation.navigate('BookScreen', { categoryId });
   };
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
-    }, 1000); // Change message every second
-    return () => clearInterval(interval);
-  }, []);
+
   const getImageSource = (icon) => {
     return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
   };
 
   return (
     <SafeAreaView style={styles.container}>
-    
-   
-        {categories.map(category => (
-          <TouchableOpacity
-            key={category.category_id}
-            onPress={() => handleCategoryClick(category.category_id)}
-            style={styles.categoryItem}
-          >
-            <Image source={getImageSource(category.icon)} style={styles.categoryImage} />
-          </TouchableOpacity>
-        ))}
+      {categories.map(category => (
+        <TouchableOpacity
+          key={category.category_id}
+          onPress={() => handleCategoryClick(category.category_id)}
+          style={styles.categoryItem}
+        >
+          <Image source={getImageSource(category.icon)} style={styles.categoryImage} />
+        </TouchableOpacity>
+      ))}
 
       <View style={styles.header}>
-      <Text style={styles.headerMessage}>{texts[currentTextIndex]}</Text>
+        <Text style={styles.headerMessage}>{texts[currentTextIndex]}</Text>
       </View>
     </SafeAreaView>
   );
@@ -74,12 +80,12 @@ const styles = StyleSheet.create({
     padding: 40,
     backgroundColor: 'black',
     elevation: 4,
-    borderTopLeftRadius:100,
-    borderBottomRightRadius:100
+    borderTopLeftRadius: 100,
+    borderBottomRightRadius: 100
   },
   headerMessage: {
     fontSize: 23,
-    color:"white",
+    color: "white",
     fontFamily: 'PlayfairDisplay-Bold',
   },
   container: {
@@ -97,7 +103,6 @@ const styles = StyleSheet.create({
     width: 250,
     height: 400,
     borderRadius: 25,
-
   },
 });
 

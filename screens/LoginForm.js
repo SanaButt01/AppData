@@ -44,13 +44,7 @@ const Login = ({ navigation }) => {
     if (!password.trim()) {
       setErrorPassword('Please enter your password.');
       valid = false;
-    } else if (password.length < 8) {
-      setErrorPassword('Password must be at least 8 characters long.');
-      valid = false;
-    } else if (!passwordRegex.test(password)) {
-      setErrorPassword('Password must contain a combination of characters and numbers.');
-      valid = false;
-    }
+    } 
 
     return valid;
   };
@@ -71,11 +65,11 @@ const Login = ({ navigation }) => {
           navigation.navigate('DrawerScreens', { screen: 'Dashboard' });
         } else {
           // Handle other status codes if needed
-          ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.SHORT);
+          ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
         }
       } catch (error) {
-        console.error('Error logging in:', error);
-        ToastAndroid.show('Login failed. Please try again later.', ToastAndroid.SHORT);
+        // console.error('Error logging in:', error);
+        ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
       }
     }
   };

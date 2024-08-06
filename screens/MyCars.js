@@ -1,65 +1,36 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, Image, TouchableOpacity, Text } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const MyCarousel = ({navigation}) => {
+const MyCarousel = ({ navigation }) => {
   const localImage1 = require("../assets/splash1.png");
   const localImage2 = require("../assets/splash2.png");
   const localImage3 = require("../assets/splash3.png");
   const localImage4 = require("../assets/splash4.png");
-  const [currentPage, setCurrentPage] = useState(0);
+  const images = [localImage1, localImage2, localImage3, localImage4];
 
-  const handleScroll = (event) => {
-    const { contentOffset } = event.nativeEvent;
-    const page = Math.round(contentOffset.x / SCREEN_WIDTH);
-    setCurrentPage(page);
-  };
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-      >
-        <View style={styles.slide}>
-          <Image source={localImage1} style={styles.image} />
+      <View style={styles.slide}>
+        <Image source={images[currentImageIndex]} style={styles.image} />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonWrapper} onPress={() => navigation.navigate('Signup')}>
+            <Text style={styles.buttonText}>Get Started</Text>
+          </TouchableOpacity>
         
-            <View style={styles.buttonContainer}>
-               <TouchableOpacity style={styles.buttonWrapper} 
-               onPress={()=>navigation.navigate('Signup')}>
-                <Text style={styles.buttonText}>Sign up</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.buttonWrappe} 
-               onPress={()=>navigation.navigate('Login')}>
-                <Text style={styles.buttonText}>Login</Text>
-              </TouchableOpacity>
-            </View>
-      
         </View>
-  
-        <View style={styles.slide}>
-          <Image source={localImage2}  style={styles.image} />
-        </View>
-        <View style={styles.slide}>
-          <Image source={localImage3}  style={styles.image} />
-        </View>
-        <View style={styles.slide}>
-          <Image source={localImage4}  style={styles.image} />
-          {currentPage === 3 && (
-            <View style={styles.buttonContainer}>
-               <TouchableOpacity style={styles.buttonWrapper} 
-               onPress={()=>navigation.navigate('Signup')}>
-                <Text style={styles.buttonText}>Get Started</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-
+      </View>
     </View>
   );
 };
@@ -78,50 +49,25 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
   },
-  pagination: {
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-  },
-  paginationDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#888',
-    marginHorizontal: 6,
-  },
-  paginationDotActive: {
-    backgroundColor: '#000',
-  },
   buttonContainer: {
     position: 'absolute',
-    bottom: 50, // Adjust button position as needed
+    bottom: 50,
     alignSelf: 'center',
-    width: 180,
+    width: 300,
   },
   buttonWrapper: {
-    borderRadius: 50, // Apply borderRadius to the wrapper
-    backgroundColor: 'black', // Background color of the button
-    paddingVertical: 20, // Adjust padding as needed
-    paddingHorizontal: 20, // Adjust padding as needed
-    marginBottom:5
-  },
-
-
-  buttonWrappe: {
-    borderRadius: 50, // Apply borderRadius to the wrapper
-    backgroundColor: 'black', // Background color of the button
-    paddingVertical: 20, // Adjust padding as needed
-    paddingHorizontal: 20, // Adjust padding as needed
+    borderRadius: 5,
+    backgroundColor: 'black',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginBottom: 5,
   },
   buttonText: {
-    color: '#fff', // Text color
-    textAlign: 'center', // Center align the text
-    fontSize:20, // Font size of the text
-    fontFamily: 'Roboto-Bold' 
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'Roboto-Bold',
   },
-
 });
 
 export default MyCarousel;

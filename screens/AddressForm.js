@@ -145,13 +145,24 @@ if (error) {
             />
             <Image source={icons.loc} style={styles.email} />
           </View>
-      <CardField
-        postalCodeEnabled={false}
-        placeholders={{ number: '4242 4242 4242 4242' }}
-        cardStyle={styles.card}
-        style={styles.cardContainer}
-        onCardChange={(cardDetails) => setCardDetails(cardDetails)}
-      />
+          <CardField
+            postalCodeEnabled={false}
+            placeholders={{
+              number: '4242 4242 4242 4242',
+              expiration: 'MM/YY',
+              cvc: 'CVC',
+            }}
+            cardStyle={{
+              textColor: '#000000',
+              placeholderColor: '#888888', // Explicitly set placeholder color
+              borderWidth: 1,
+              borderColor: '#000000',
+              borderRadius: 5,
+              backgroundColor: '#FFFFFF',
+            }}
+            style={styles.cardContainer}
+            onCardChange={(cardDetails) => setCardDetails(cardDetails)}
+          />
 {/* 
           <View style={styles.inputContainer}>
             <TextInput
@@ -274,12 +285,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
+      color:"black"
   },
   totalText: {
     fontFamily: 'Roboto-Bold',
     fontSize: 25,
     marginLeft: 10,
     marginTop: 20,
+    color:"black"
   },
   icon: {
     width: 40,

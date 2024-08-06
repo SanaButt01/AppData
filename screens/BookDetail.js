@@ -11,8 +11,9 @@ const BookDetail = ({ route, navigation }) => {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API_HOST}/api/books/${book.book_id}/content`)
-      .then(response => {
+    const fetchBookDetails = async () => {
+      try {
+        const response = await axios.get(`${API_HOST}/api/books/${book.book_id}/content`);
         console.log("API response:", response.data);
 
         if (response.data) {
@@ -26,10 +27,18 @@ const BookDetail = ({ route, navigation }) => {
         } else {
           console.error("No data found in response");
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error("Error fetching book details:", error);
-      });
+      }
+    };
+
+    fetchBookDetails(); // Initial fetch
+
+    const interval = setInterval(() => {
+      fetchBookDetails(); // Polling every 30 seconds
+    }, 1000); // 30 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
   }, [book.book_id]);
 
   const getImageSource = (icon) => {
@@ -43,7 +52,6 @@ const BookDetail = ({ route, navigation }) => {
       console.error('content_id is not available');
     }
   };
-  
 
   function renderBookDescription() {
     if (!bookDetails || !content) return null;
@@ -121,10 +129,10 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     // ...FONTS.body3,
-    fontSize:15,
+    fontSize: 15,
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black, // Updated color to match theme
-    marginBottom: SIZES.padding ,
+    marginBottom: SIZES.padding,
     lineHeight: 24,
   },
   previewButton: {
@@ -134,7 +142,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.black, // Updated to black color
     borderRadius: 15,
     alignItems: "center",
-   
   },
   previewButtonText: {
     color: COLORS.white, // Ensure text is white for contrast

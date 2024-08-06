@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, ImageBackg
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromCart, increaseQuantity, decreaseQuantity } from "../ACTIONS";
 import { FONTS, COLORS, icons } from "../constants";
-
+import { API_HOST } from '../myenv';
 const ShoppingCart = ({ navigation }) => {
 
   const localIm=require("../assets/empty.png");
@@ -25,11 +25,14 @@ const ShoppingCart = ({ navigation }) => {
   const handleDecreaseQuantity = (item) => {
     dispatch(decreaseQuantity(item.title));
   };
+  const getImageSource = (icon) => {
+    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.item}>
-        <Image source={item.path} style={styles.itemImage} />
+        <Image source={getImageSource(item.path)}style={styles.itemImage} />
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.title}</Text>
           <Text style={styles.itemAuthor}>{item.author}</Text>
@@ -124,15 +127,17 @@ const ShoppingCart = ({ navigation }) => {
     itemName: {
       ...FONTS.bold,
       fontSize: 18,
+       color:"black"
     },
     itemAuthor: {
       ...FONTS.regular,
       fontSize: 16,
-      color: COLORS.gray,
+     color:"black"
     },
     itemPrice: {
       ...FONTS.regular,
       fontSize: 16,
+       color:"black"
     },
     quantityContainer: {
       flexDirection: 'row',
@@ -166,6 +171,7 @@ const ShoppingCart = ({ navigation }) => {
     totalText: {
       ...FONTS.bold,
       fontSize: 20,
+      color:"black"
     },
     checkoutButton: {
       backgroundColor: COLORS.black,

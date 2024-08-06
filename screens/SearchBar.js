@@ -14,6 +14,7 @@ const SearchBar = ({ onSearch }) => {
       <TextInput
         style={styles.input}
         placeholder="Search by Title|Author Name..."
+        placeholderTextColor="#888"
         value={searchQuery}
         onChangeText={(text) => setSearchQuery(text)}
         returnKeyType="search"
@@ -46,6 +47,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     width: '100%',
     fontFamily: 'PlayfairDisplay-Bold',
+    paddingTop:5
   },
 });
 
