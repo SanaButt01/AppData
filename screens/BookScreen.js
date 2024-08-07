@@ -49,11 +49,8 @@ const BookScreen = ({ route }) => {
       // Handle error case
     });
   };
-
   useEffect(() => {
     fetchBooks();
-    const interval = setInterval(fetchBooks, 1000); // Polling every 5 seconds
-    return () => clearInterval(interval); // Cleanup on unmount
   }, [categoryId]);
 
   useEffect(() => {
@@ -87,7 +84,7 @@ const BookScreen = ({ route }) => {
   };
   const navigateToBookDetail = (book) => {
     // Pass book details to BookDetail route
-    navigation.navigate('BookDetail', { book });
+    navigation.navigate('BookInsight', { book });
   };
 
   const handleSearch = (query) => {
@@ -198,7 +195,7 @@ const styles = StyleSheet.create({
   bookContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
     borderRadius: 10,
     backgroundColor: '#f0f0f0',
     padding: 12,

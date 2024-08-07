@@ -26,7 +26,6 @@ const SidePanel = () => {
 
   useEffect(() => {
     fetchCategories();
-    const interval = setInterval(fetchCategories, 5000); // Polling every 5 seconds
 
     // Rotate message every 1 second
     const messageInterval = setInterval(() => {
@@ -34,7 +33,6 @@ const SidePanel = () => {
     }, 1000);
 
     return () => {
-      clearInterval(interval); // Clear the interval on component unmount
       clearInterval(messageInterval); // Clear the message interval on component unmount
     };
   }, []);
@@ -105,7 +103,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: '100%',
-    height: 150,
+    height: 140,
     borderBottomLeftRadius:30,
     borderBottomRightRadius: 100,
     overflow: 'hidden', // To ensure the shadow appears correctly
@@ -133,7 +131,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
     alignItems: 'center',
   },
   headerText: {

@@ -156,16 +156,16 @@ const App = () => {
       <StripeProvider publishableKey="pk_test_51Ok46fKWEwsvQglH9hhqE9YhYSWHDpXG84EM5EaASAA4dnyBSAPzomo4ZDfcWJvK9EloBaQ8eOASrlgoBZhUBq7d00X4PRp02d">
       <NavigationContainer theme={theme}>
           <Stack.Navigator
-              initialRouteName="Dashboard"
+              initialRouteName="Dasboard"
               screenOptions={{
                   headerShown: false,
               }}
           >
               <Stack.Screen name="DrawerScreens" component={DrawerScreens} />
-              <Stack.Screen name="AddressForm" component={AddressForm} options={{ headerShown: true }} />
-              <Stack.Screen name="BookDetail" component={BookDetail} options={{ headerShown: true }} />
+              <Stack.Screen name="OrderCheckout" component={AddressForm} options={{ headerShown: true }} />
+              <Stack.Screen name="BookInsight" component={BookDetail} options={{ headerShown: true }} />
               <Stack.Screen name="BookScreen" component={BookScreen} options={{ headerShown: true }}/>
-              <Stack.Screen name="PreviewScreen" component={PreviewScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="PreviewDisplay" component={PreviewScreen} options={{ headerShown: true, }}/>
               <Stack.Screen name="MyCars" component={MyCars} options={{ headerShown: false }}/>
               <Stack.Screen name="Signup" component={Register} options={{ headerShown: false }}/>
               <Stack.Screen name="Login" component={LoginForm} options={{ headerShown: false }}/>

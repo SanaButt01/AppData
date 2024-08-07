@@ -34,11 +34,11 @@ const BookDetail = ({ route, navigation }) => {
 
     fetchBookDetails(); // Initial fetch
 
-    const interval = setInterval(() => {
-      fetchBookDetails(); // Polling every 30 seconds
-    }, 1000); // 30 seconds
+    // const interval = setInterval(() => {
+    //   fetchBookDetails(); // Polling every 30 seconds
+    // }, 1000); // 30 seconds
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    // return () => clearInterval(interval); // Cleanup on unmount
   }, [book.book_id]);
 
   const getImageSource = (icon) => {
@@ -47,7 +47,7 @@ const BookDetail = ({ route, navigation }) => {
 
   const handleShowPreview = () => {
     if (bookDetails && bookDetails.content_id) {
-      navigation.navigate('PreviewScreen', { content_id: bookDetails.content_id });
+      navigation.navigate('PreviewDisplay', { content_id: bookDetails.content_id });
     } else {
       console.error('content_id is not available');
     }
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 200,
     borderRadius: 10,
-    marginBottom: SIZES.padding,
+    marginBottom:10,
     // Adjust if needed
   },
   bookTitle: {
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     fontFamily: 'PlayfairDisplay-Bold',
+  
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -124,15 +125,16 @@ const styles = StyleSheet.create({
     // ...FONTS.h2,
     fontSize: 20,
     color: COLORS.black, // Updated color to match theme
-    marginBottom: SIZES.padding,
+    marginBottom: 10,
     fontFamily: 'PlayfairDisplay-Bold',
+    marginTop: -5,
   },
   descriptionText: {
     // ...FONTS.body3,
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black, // Updated color to match theme
-    marginBottom: SIZES.padding,
+    // marginBottom: SIZES.padding,
     lineHeight: 24,
   },
   previewButton: {

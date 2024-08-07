@@ -11,11 +11,6 @@ const PreviewScreen = ({ route }) => {
   useEffect(() => {
     if (content_id) {
       fetchPreviews(content_id); // Initial fetch
-      const interval = setInterval(() => {
-        fetchPreviews(content_id); // Polling every 30 seconds
-      }, 30000); // 30 seconds
-
-      return () => clearInterval(interval); // Cleanup on unmount
     } else {
       console.error('content_id is undefined');
     }
@@ -87,7 +82,7 @@ const styles = StyleSheet.create({
   previewImage: {
     width: "100%",
     height: 300,
-    marginBottom: SIZES.padding,
+    // marginBottom: 10,
   },
   center: {
     flex: 1,

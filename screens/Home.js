@@ -17,6 +17,7 @@ const Home = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [messageIndex, setMessageIndex] = useState(0);
 
   const fetchCategories = () => {
     axios.get(`${API_HOST}/api/categories`)
@@ -33,15 +34,15 @@ const Home = () => {
 
   useEffect(() => {
     fetchCategories();
-    const interval = setInterval(fetchCategories, 1000); // Polling every 5 seconds
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
-    }, 1000); // Change message every second
-    return () => clearInterval(interval); // Cleanup on unmount
+    // Rotate message every 1 second
+    const messageInterval = setInterval(() => {
+      setMessageIndex(prevIndex => (prevIndex + 1) % texts.length);
+    }, 1000);
+
+    return () => {
+      clearInterval(messageInterval); // Clear the message interval on component unmount
+    };
   }, []);
 
   const handleCategoryClick = (categoryId) => {

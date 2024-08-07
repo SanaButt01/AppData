@@ -6,7 +6,7 @@ import axios from 'axios';
 import { API_HOST } from '../myenv';
 
 const AddressForm = ({ navigation, route }) => {
-  const { cartItems, totalPrice } = route.params; // Extracting params from navigation route
+  const { cartItems, grandTotal } = route.params; // Extracting params from navigation route
   const [cardDetails, setCardDetails] = useState(null);
   const { confirmPayment } = useStripe();
 
@@ -44,7 +44,7 @@ const AddressForm = ({ navigation, route }) => {
   };
 
   const handlePayment = async () => {
-    console.log(totalPrice);
+    console.log(grandTotal);
     if (validateForm()) {
       if (!cardDetails?.complete) {
         console.log('Please fill out the card details');
@@ -53,7 +53,7 @@ const AddressForm = ({ navigation, route }) => {
       
       // Fetch the payment intent client secret from your backend
 const response = await axios.post(API_HOST + '/api/create-payment-intent', {
-  amount: totalPrice * 100, 
+  amount: grandTotal * 100, 
 }, {
   headers: {
     'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ if (error) {
     address: address,
     product: productTitles,
     status: 'pending',
-    total: totalPrice,
+    total: grandTotal,
   }, {
     headers: {
       'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ if (error) {
           <Text style={styles.sectionTitle}>{item.title}</Text>
         </View>
       ))}
-      <Text style={styles.sectionTitle}>Total Price: Rs.{totalPrice}</Text>
+      <Text style={styles.sectionTitle}>Total Price: Rs.{grandTotal}</Text>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoidingView}
