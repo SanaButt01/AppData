@@ -20,7 +20,6 @@ const BookScreen = ({ route }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [booksData, setBooksData] = useState([]);
   
-  // Array of texts to rotate through
   const texts = [
     'Top books!',
     'New arrivals!',
@@ -42,13 +41,13 @@ const BookScreen = ({ route }) => {
     })
     .then(response => {
       const data = response.data;
-      setBooks(data); // Assuming API returns an array of books similar to booksData format
+      setBooks(data);
     })
     .catch(error => {
       console.error("Error fetching books:", error);
-      // Handle error case
     });
   };
+
   useEffect(() => {
     fetchBooks();
   }, [categoryId]);
@@ -65,7 +64,6 @@ const BookScreen = ({ route }) => {
   }, [cartData]);
 
   useEffect(() => {
-    // Initialize addedToCart state based on cartData
     const updatedAddedToCart = {};
     cartData.forEach((item) => {
       updatedAddedToCart[item.title] = true;
@@ -74,14 +72,16 @@ const BookScreen = ({ route }) => {
   }, [cartData]);
 
   const handleAddtoCart = (item) => {
+    const discountedPrice = item.disc ? item.price - (item.price * item.disc / 100) : item.price;
+
     if (addedToCart[item.title]) {
       // If already added to cart, remove it
       // Dispatch action to remove item from cart
     } else {
-      // If not added to cart, add it
-      dispatch(addtocart(item));
+      dispatch(addtocart({ ...item, price: discountedPrice }));
     }
   };
+
   const navigateToBookDetail = (book) => {
     // Pass book details to BookDetail route
     navigation.navigate('BookInsight', { book });
@@ -100,33 +100,42 @@ const BookScreen = ({ route }) => {
   };
 
   const getImageSource = (icon) => {
-    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
+    return { uri: `${API_HOST}/storage/${icon}` };
   };
 
-  const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item)}>
-      <View style={styles.imageContainer}>
-        <Image source={getImageSource(item.path)} resizeMode="cover" style={styles.bookImage} />
-      </View>
-      <View style={styles.bookDetails}>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-        <Text style={styles.author}>By: {item.author}</Text>
-        <Text style={styles.price}>Rs. {item.price}</Text>
-        {item.disc && (
-          <View style={styles.discountContainer}>
-            <Text style={styles.discountText}>{item.disc}%Off</Text>
+  const renderBookItem = ({ item }) => {
+    const discountedPrice = item.price - (item.price * item.disc / 100);
+
+    return (
+      <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item)}>
+        <View style={styles.imageContainer}>
+          <Image source={getImageSource(item.path)} resizeMode="cover" style={styles.bookImage} />
+        </View>
+        <View style={styles.bookDetails}>
+          <Text style={styles.bookTitle}>{item.title}</Text>
+          <Text style={styles.author}>By: {item.author}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={item.disc ? styles.priceWithDiscount : styles.price}>Rs. {item.price}</Text>
+            {item.disc && (
+              <Text style={styles.discountedPrice}>Rs. {discountedPrice.toFixed(2)}</Text>
+            )}
           </View>
-        )}
-        <Button
-          onPress={() => handleAddtoCart(item)}
-          color='black'
-          title={addedToCart[item.title] ? 'Added to Cart' : 'ADD TO CART'}
-          disabled={addedToCart[item.title]}
-          style={styles.addButton}
-        />
-      </View>
-    </TouchableOpacity>
-  );
+          {item.disc && (
+            <View style={styles.discountContainer}>
+              <Text style={styles.discountText}>{item.disc}% Off</Text>
+            </View>
+          )}
+          <Button
+            onPress={() => handleAddtoCart(item)}
+            color='black'
+            title={addedToCart[item.title] ? 'Added to Cart' : 'ADD TO CART'}
+            disabled={addedToCart[item.title]}
+            style={styles.addButton}
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -195,7 +204,7 @@ const styles = StyleSheet.create({
   bookContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
     borderRadius: 10,
     backgroundColor: '#f0f0f0',
     padding: 12,
@@ -225,15 +234,31 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "black"
   },
+  author: {
+    fontSize: 14,
+    color: '#666',
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   price: {
     fontSize: SIZES.body3,
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black,
     marginBottom: 5,
   },
-  author: {
-    fontSize: 14,
-    color: '#666',
+  priceWithDiscount: {
+    fontSize: SIZES.body3,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: COLORS.gray,
+    textDecorationLine: 'line-through',
+    marginRight: 10,
+  },
+  discountedPrice: {
+    fontSize: SIZES.body3,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: COLORS.black,
   },
   discountContainer: {
     position: 'absolute',

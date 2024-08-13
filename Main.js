@@ -5,7 +5,7 @@ import { LogBox, View, Image, TouchableOpacity } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { StripeProvider } from '@stripe/stripe-react-native';
 
-import { icons } from './constants';
+import { icons,COLORS } from './constants';
 import UserProfile from './screens/UserProfile'
 import { BookDetail, Home } from './screens/';
 import Register from './screens/Register';
@@ -58,7 +58,7 @@ const DrawerScreens = () => {
                     fontFamily: 'PlayfairDisplay-Bold',
                 },
                 headerStyle: {
-                    backgroundColor: 'black',
+                    backgroundColor:"black",
                     height: 70,
                 },
                 headerTintColor: 'white',
