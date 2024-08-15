@@ -3,6 +3,8 @@ import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet,
 import { icons } from "../constants";
 import axios from 'axios';
 import { API_HOST } from '../myenv';
+import { useDispatch } from 'react-redux';
+import { setUserProfile } from '../ACTIONS';
 
 const Login = ({ navigation }) => {
   const localImage2 = require("../assets/sup.jpg");
@@ -51,29 +53,35 @@ const Login = ({ navigation }) => {
 
   const validateEmail = (email) => /\S+@gmail\.com/.test(email);
 
+ 
+  const dispatch = useDispatch();
+
   const handleSign = async () => {
     if (validateForm()) {
+      console.log('Email:', email); // Log email
+      console.log('Password:', password); // Log password for debugging
+  
       try {
         const response = await axios.post(API_HOST + '/api/login', {
           email: email,
           password: password,
         });
-
+  
         if (response.status === 200) {
           // Login successful
+          const userProfile = response.data; // Assuming the user profile is in response.data
+          dispatch(setUserProfile(userProfile)); // Dispatch the profile details to Redux
           ToastAndroid.show('Login successful!', ToastAndroid.SHORT);
           navigation.navigate('DrawerScreens', { screen: 'Dashboard' });
         } else {
-          // Handle other status codes if needed
           ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
         }
       } catch (error) {
-        // console.error('Error logging in:', error);
         ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
       }
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">

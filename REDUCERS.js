@@ -1,4 +1,5 @@
-import { ADD_TO_CART, REMOVE_FROM_CART } from "./ACTIONTYPES";
+import { ADD_TO_CART, REMOVE_FROM_CART,SET_USER_PROFILE } from "./ACTIONTYPES";
+
 
 const initialState = [];
 

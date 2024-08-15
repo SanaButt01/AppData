@@ -1,5 +1,5 @@
 // actions.js
-import { ADD_TO_CART, REMOVE_FROM_CART, INCREASE_QUANTITY, DECREASE_QUANTITY } from "./ACTIONTYPES";
+import { ADD_TO_CART, REMOVE_FROM_CART, INCREASE_QUANTITY, DECREASE_QUANTITY, SET_USER_PROFILE } from "./ACTIONTYPES";
 
 export function addtocart(item) {
     return {
@@ -17,15 +17,21 @@ export function removeFromCart(itemId) {
 
 export function increaseQuantity(itemId) {
     return {
-      type: 'INCREASE_QUANTITY',
-      id: itemId
+        type: INCREASE_QUANTITY, // Use the constant for action type
+        id: itemId
     };
-  }
-  
-  export function decreaseQuantity(itemId) {
+}
+
+export function decreaseQuantity(itemId) {
     return {
-      type: 'DECREASE_QUANTITY',
-      id: itemId
+        type: DECREASE_QUANTITY, // Use the constant for action type
+        id: itemId
     };
-  }
-  
+}
+
+export function setUserProfile(profile) {
+    return {
+        type: SET_USER_PROFILE,
+        payload: profile
+    };
+}

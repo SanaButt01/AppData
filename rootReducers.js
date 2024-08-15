@@ -1,7 +1,9 @@
+// rootReducer.js
 import { combineReducers } from "redux";
-import {reducer} from "./REDUCERS"; 
-
+import { reducer as cartReducer } from "./REDUCERS"; // Existing cart reducer
+import { userReducer } from "./userReducer"; // Import the new user reducer
 
 export default combineReducers({
-    reducer
-})
+  cart: cartReducer,
+  user: userReducer, // Add user reducer to combined reducers
+});

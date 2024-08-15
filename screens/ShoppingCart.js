@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeFromCart, increaseQuantity, decreaseQuantity } from "../ACTIONS";
-import { FONTS, COLORS, icons } from "../constants";
+import { removeFromCart, increaseQuantity, decreaseQuantity } from '../ACTIONS';
+import { FONTS, COLORS, icons } from '../constants';
 import { API_HOST } from '../myenv';
 
 const ShoppingCart = ({ navigation }) => {
-  const localIm = require("../assets/empty.png");
+  const localIm = require('../assets/empty.png');
   const dispatch = useDispatch();
-  const cartItems = useSelector(state => state.reducer);
+  const cartItems = useSelector(state => state.cart); // Update to match combined reducer key
 
   const SHIPPING_COST = 500; // Shipping cost
   const TAX_RATE = 0.2; // 20% tax rate
@@ -39,7 +39,7 @@ const ShoppingCart = ({ navigation }) => {
   };
 
   const getImageSource = (icon) => {
-    return { uri: `${API_HOST}/storage/${icon}` }; // Adjusted to match your API structure
+    return { uri: `${API_HOST}/storage/${icon}` };
   };
 
   const renderItem = ({ item }) => (
@@ -91,7 +91,7 @@ const ShoppingCart = ({ navigation }) => {
                     cartItems: cartItems.map(item => ({
                       title: item.title,
                     })),
-                    grandTotal:  calculateGrandTotal(totalPrice),
+                    grandTotal: calculateGrandTotal(totalPrice),
                   })
                 }
               >
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     marginTop: 10,
     alignItems: 'center',
- 
+
   },
   checkoutButtonText: {
     fontFamily: 'PlayfairDisplay-Bold',

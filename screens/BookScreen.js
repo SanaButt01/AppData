@@ -13,7 +13,7 @@ const BookScreen = ({ route }) => {
   const [books, setBooks] = useState([]);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const cartData = useSelector((state) => state.reducer);
+  const cartData = useSelector((state) => state.cart); // Update this to match combined reducer key
   const [cartItems, setCartItems] = useState(0);
   const [addedToCart, setAddedToCart] = useState({});
   const [searchResults, setSearchResults] = useState([]);
@@ -160,7 +160,6 @@ const BookScreen = ({ route }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

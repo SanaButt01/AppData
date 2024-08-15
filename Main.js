@@ -156,7 +156,7 @@ const App = () => {
       <StripeProvider publishableKey="pk_test_51Ok46fKWEwsvQglH9hhqE9YhYSWHDpXG84EM5EaASAA4dnyBSAPzomo4ZDfcWJvK9EloBaQ8eOASrlgoBZhUBq7d00X4PRp02d">
       <NavigationContainer theme={theme}>
           <Stack.Navigator
-              initialRouteName="Dasboard"
+              initialRouteName="MyCars"
               screenOptions={{
                   headerShown: false,
               }}
