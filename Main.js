@@ -20,7 +20,8 @@ import ContactUsScreen from './screens/ContactUsScreen';
 import BookScreen from './screens/BookScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
 import ForgotPassword from './screens/ForgotPassword';
-
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import EnterCodeScreen from './screens/EnterCodeScreen';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 
 const theme = {
@@ -171,6 +172,8 @@ const App = () => {
               <Stack.Screen name="Login" component={LoginForm} options={{ headerShown: false }}/>
               <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }}/>
               <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }}/>
+              <Stack.Screen name="Reset Password" component={ForgotPasswordScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="Verification Code" component={EnterCodeScreen} options={{ headerShown: true }}/>
           </Stack.Navigator>
       </NavigationContainer>
   </StripeProvider>

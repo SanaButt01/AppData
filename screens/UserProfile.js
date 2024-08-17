@@ -12,14 +12,12 @@ const Profile = ({ navigation }) => {
   const localImage2 = require("../assets/sup.jpg");
   const [icon, setIcon] = useState(null);
   const [errorUsername, setErrorUsername] = useState('');
-  const [errorPassword, setErrorPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
   const dispatch = useDispatch();
   const userProfile = useSelector((state) => state.user.profile);
-
   const [name, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState(userProfile.user?.password || '');
+
 
   useEffect(() => {
     console.log('Profile data:', userProfile);
@@ -27,31 +25,14 @@ const Profile = ({ navigation }) => {
       console.log('Profile:', userProfile.user); // Log the entire profile
       setUsername(userProfile.user.name || '');
       setEmail(userProfile.user.email || '');
-      // Check if the password field exists
-      if (userProfile.user.password) {
-        console.log('Setting password:', userProfile.user.password); // Debug log
-        setPassword(userProfile.user.password || '');
-      } else {
-        console.log('Password not found in profile');
-      }
       setIcon(userProfile.user.icon ? `${API_HOST}/storage/${userProfile.user.icon}` : null);
     }
   }, [userProfile]);
-  
-  
-  
-  console.log('Password from profile:', userProfile.user.password);
-  
-  // ...rest of your code
 
-
-  // Debugging logs
   useEffect(() => {
-    console.log('Current state:', { name, email, password });
-  }, [name, email, password]);
-  const handlePasswordChange = (text) => setPassword(text);
+    console.log('Current state:', { name, email });
+  }, [name, email]);
   const handleNameChange = (text) => setUsername(text.trimStart());
-  // const handlePasswordChange = (text) => setPassword(text.trimStart());
   const handleEmailChange = (text) => setEmail(text.trimStart());
 
 
@@ -78,7 +59,6 @@ const Profile = ({ navigation }) => {
   const validateForm = () => {
     let valid = true;
     setErrorUsername('');
-    setErrorPassword('');
     setErrorEmail('');
 
     if (!name.trim()) {
@@ -93,11 +73,6 @@ const Profile = ({ navigation }) => {
       setErrorEmail('Please enter a valid email address.');
       valid = false;
     }
-
-    if (!password.trim()) {
-      setErrorPassword('Please enter your password.');
-      valid = false;
-    }
     return valid;
   };
 
@@ -109,7 +84,6 @@ const Profile = ({ navigation }) => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
-        formData.append('password', password);
 
         if (icon) {
           formData.append('icon', {
@@ -210,18 +184,6 @@ const Profile = ({ navigation }) => {
                 />
               </View>
               {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
-              <View style={styles.inputContainer}>
-                <Image source={icons.pass2} style={styles.icon} />
-                <TextInput
-  style={styles.input}
-  placeholder="New Password"
-  placeholderTextColor="#888"
-  onChangeText={handlePasswordChange}
-  value={password}
-  secureTextEntry={true} // This makes the password text obscure
-/>
- </View>
-              {errorPassword ? <Text style={styles.errorText}>{errorPassword}</Text> : null}
               <TouchableOpacity style={styles.button} onPress={handleUpdate}>
                 <Text style={styles.buttonText}>Update</Text>
               </TouchableOpacity>
