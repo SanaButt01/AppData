@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ToastAndroid  } from 'react-native';
+import axios from 'axios';
+import { API_HOST } from '../myenv';
+
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
 
   const handleSendLink = () => {
-    Alert.alert(
-      'Password Reset',
-      'A link has been sent to your email that contains a code. Please enter the code here.',
-      [{ text: 'OK', onPress: () => navigation.navigate('Verification Code') }]
-    );
+    axios.post(API_HOST + '/api/password-reset/request-code', { email })
+      .then(response => {
+        ToastAndroid.show('code has been sent to ' + email, ToastAndroid.SHORT);
+        navigation.navigate('Verification Code', { email });
+      })
+      .catch(error => {
+        console.error(error);
+        Alert.alert('Error', error);
+      });
+
+    navigation.navigate('Verification Code', { email });
   };
 
   return (

@@ -1,40 +1,59 @@
+import axios from 'axios';
 import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ToastAndroid } from 'react-native';
+import { API_HOST } from '../myenv';
 
-const EnterCodeScreen = ({ navigation }) => {
-  const [code, setCode] = useState(['', '', '', '']); // Array to store each digit
+const EnterCodeScreen = ({ route, navigation }) => {
+  const { email } = route.params;
+  const [code, setCode] = useState(Array(6).fill('')); // Initialize an array of 6 empty strings
   const inputRefs = useRef([]); // Refs to manage focus on inputs
 
   const handleChangeText = (text, index) => {
-    if (/^\d*$/.test(text) && text.length <= 1) {
+    if (/^\d$/.test(text)) { // Ensure only a single digit is entered
       const newCode = [...code];
       newCode[index] = text;
       setCode(newCode);
 
-      if (index < 3 && text) {
-        // Move to the next input automatically
+      // Move to the next input automatically if there is a next input
+      if (index < 5) {
         inputRefs.current[index + 1].focus();
       }
+    } else if (text === '') { // Allow clearing of the input
+      const newCode = [...code];
+      newCode[index] = '';
+      setCode(newCode);
     }
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
     const fullCode = code.join('');
-    if (fullCode.length !== 4) {
-      Alert.alert('Invalid Code', 'Please enter a 4-digit code.');
+    
+    if (fullCode.length !== 6) {
+      Alert.alert('Invalid Code', 'Please enter a 6-digit code.');
       return;
     }
-    // Handle code verification logic here
-    Alert.alert('Success', 'Code verified successfully!', [
-      { text: 'OK', onPress: () => navigation.navigate('ForgotPassword') },
-    ]);
+
+    try {
+      const response = await axios.post(`${API_HOST}/api/password-reset/verify-code`, { email, code: fullCode });
+      const { auth_token } = response.data;
+      
+      if (auth_token) {
+        ToastAndroid.show('Code verified', ToastAndroid.SHORT);
+        navigation.navigate('ForgotPassword', { email, authToken: auth_token });
+      } else {
+        Alert.alert('Error', 'Invalid response from server.');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Verification Failed', error.response?.data?.message || 'An error occurred. Please try again.');
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Enter Verification Code</Text>
       <Text style={styles.subtitle}>
-        A 4-digit code has been sent to your email. Please enter it below.
+        A 6-digit code has been sent to your email. Please enter it below.
       </Text>
       <View style={styles.codeContainer}>
         {code.map((digit, index) => (
@@ -47,6 +66,7 @@ const EnterCodeScreen = ({ navigation }) => {
             keyboardType="numeric"
             maxLength={1}
             textAlign="center"
+            autoFocus={index === 0} // Automatically focus on the first input
           />
         ))}
       </View>

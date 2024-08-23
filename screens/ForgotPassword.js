@@ -4,34 +4,23 @@ import axios from 'axios';
 import { API_HOST } from '../myenv';
 import { icons } from "../constants"; // Import your icons
 
-const ForgotPassword = ({ navigation }) => {
+const ForgotPassword = ({ route,  navigation }) => {
+  const { email, authToken } = route.params;
   const localImage = require("../assets/sup.jpg"); // Local image
 
-  const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorEmail, setErrorEmail] = useState('');
   const [errorNewPassword, setErrorNewPassword] = useState('');
   const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
 
-  const handleEmailChange = (text) => setEmail(text.trimStart());
   const handleNewPasswordChange = (text) => setNewPassword(text.trimStart());
   const handleConfirmPasswordChange = (text) => setConfirmPassword(text.trimStart());
 
   const validateForm = () => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
     let valid = true;
-    setErrorEmail('');
     setErrorNewPassword('');
     setErrorConfirmPassword('');
-
-    if (!email.trim()) {
-      setErrorEmail('Please enter your email.');
-      valid = false;
-    } else if (!validateEmail(email)) {
-      setErrorEmail('Please enter a valid email address.');
-      valid = false;
-    }
 
     if (!newPassword.trim()) {
       setErrorNewPassword('Please enter your new password.');
@@ -52,29 +41,22 @@ const ForgotPassword = ({ navigation }) => {
     return valid;
   };
 
-  const validateEmail = (email) => /\S+@gmail\.com/.test(email);
-
   const handleResetPassword = async () => {
-    // if (validateForm()) {
-    //   try {
-    //     const response = await axios.post(API_HOST + '/api/forgot_password', {
-    //       email: email,
-    //       newPassword: newPassword,
-    //     });
+    if (validateForm()) {
 
-    //     if (response.status === 200) {
-    //       // Password reset successful
-    //       ToastAndroid.show('Password reset successful!', ToastAndroid.SHORT);
-    //       navigation.navigate('Login');
-    //     } else {
-    //       // Handle other status codes if needed
-    //       ToastAndroid.show('Password reset failed. Please try again.', ToastAndroid.SHORT);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error resetting password:', error);
-    //     ToastAndroid.show('Password reset failed. Please try again later.', ToastAndroid.SHORT);
-    //   }
-    // }
+      axios.post(API_HOST + '/api/password-reset/reset-password', { email, auth_token: authToken, password: newPassword, password_confirmation: newPassword })
+      .then(response => {
+        ToastAndroid.show('Password Reset Successful', ToastAndroid.SHORT);
+        // Navigate to login or another appropriate screen
+        navigation.navigate('Login');
+      })
+      .catch(error => {
+        console.error(error);
+        Alert.alert('Error', 'Failed to reset password. Please try again.');
+      });
+      
+    }
+
   };
 
   return (
@@ -86,18 +68,6 @@ const ForgotPassword = ({ navigation }) => {
           </View>
           <Text style={styles.title}>Reset Password</Text>
           <View style={styles.formContainer}>
-            <View style={styles.inputContainer}>
-              <Image source={icons.email2} style={styles.icon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#888"
-                onChangeText={handleEmailChange}
-                value={email}
-                keyboardType="email-address"
-              />
-            </View>
-            {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
             <View style={styles.inputContainer}>
               <Image source={icons.pass2} style={styles.icon} />
               <TextInput
