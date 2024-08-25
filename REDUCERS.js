@@ -1,4 +1,4 @@
-import { ADD_TO_CART, REMOVE_FROM_CART,SET_USER_PROFILE } from "./ACTIONTYPES";
+import { ADD_TO_CART, REMOVE_FROM_CART,CLEAR_CART } from "./ACTIONTYPES";
 
 
 const initialState = [];
@@ -42,6 +42,10 @@ export const reducer = (state = initialState, action) => {
           return [item];
         }
       });
+      
+      case CLEAR_CART:
+        return [];
+
     default:
       return state;
   }

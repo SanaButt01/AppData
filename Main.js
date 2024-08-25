@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import React, { useEffect,useState } from 'react';
+import { NavigationContainer, DefaultTheme,CommonActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LogBox, View, Image, TouchableOpacity } from 'react-native';
+import { LogBox, View, Image, TouchableOpacity,StyleSheet,Text } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { StripeProvider } from '@stripe/stripe-react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { icons,COLORS } from './constants';
 import UserProfile from './screens/UserProfile'
 import { BookDetail, Home } from './screens/';
@@ -34,22 +34,39 @@ const theme = {
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-
 const CustomDrawerContent = (props) => {
+ 
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('isLoggedIn'); // Clear login status
+            props.navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                })
+            );
+        } catch (error) {
+            console.error('Logout failed', error);
+        }
+    };
     return (
         <DrawerContentScrollView {...props}>
             <View style={{ alignItems: 'center', marginTop: 40 }}>
                 <Image source={icons.logo2} style={{ width: 110, height: 150 }} />
             </View>
             <DrawerItemList {...props} />
+            <View style={styles.logoutContainer}>
+                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                    <Text style={styles.logoutText}>Logout</Text>
+                </TouchableOpacity>
+            </View>
         </DrawerContentScrollView>
     );
 };
-
 const DrawerScreens = () => {
     return (
         <Drawer.Navigator
-            // initialRouteName={'Dashboard'}
+            initialRouteName={'Dashboard'}
             drawerContent={CustomDrawerContent}
             screenOptions={{
                 headerShown: true,
@@ -142,26 +159,79 @@ const DrawerScreens = () => {
 
 const App = () => {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+    const [initialRouteName, setInitialRouteName] = useState(null);
+
+    // Flag to check if we're in development mode
+    const isDevelopment = true; // Static flag for testing
 
     useEffect(() => {
-        SplashScreen.hide();
-    }, []);
+        const checkAppState = async () => {
+            try {
+                // Check if we're in development mode
+                const devLaunchFlag = await AsyncStorage.getItem('devLaunch');
+                console.log('Development Mode:', isDevelopment);
+                console.log('Dev Launch Flag:', devLaunchFlag);
 
-    const handleLogout = () => {
-        // Implement your logout logic here
-        console.log('User logged out');
-        // Example: Clear user session, navigate to login screen, etc.
-    };
+                if (isDevelopment) {
+                    if (devLaunchFlag === null) {
+                        // First time launching with 'npx react-native run-android'
+                        console.log('Setting initialRouteName to MyCars');
+                        setInitialRouteName('MyCars');
+                        // Set a flag to indicate MyCars has been shown
+                        await AsyncStorage.setItem('devLaunch', 'true');
+                    } else {
+                        // If the flag is set, show the regular initial route that point
+                        await AsyncStorage.removeItem('devLaunch');
+
+                        console.log('Dev Launch Flag is set, checking login status');
+                        const firstLaunchFlag = await AsyncStorage.getItem('isFirstLaunch');
+                        const loggedInStatus = await AsyncStorage.getItem('isLoggedIn');
+
+                        if (firstLaunchFlag === null) {
+                            console.log('First Launch - Setting initialRouteName to MyCars');
+                            await AsyncStorage.setItem('isFirstLaunch', 'false');
+                            setInitialRouteName('MyCars');
+                        } else {
+                            console.log('User Logged In:', loggedInStatus === 'true');
+                            setInitialRouteName(loggedInStatus === 'true' ? 'DrawerScreens' : 'Login');
+                        }
+                    }
+                } else {
+                    // Not in development mode, handle regular launch
+                    const firstLaunchFlag = await AsyncStorage.getItem('isFirstLaunch');
+                    const loggedInStatus = await AsyncStorage.getItem('isLoggedIn');
+
+                    if (firstLaunchFlag === null) {
+                        console.log('First Launch - Setting initialRouteName to MyCars');
+                        await AsyncStorage.setItem('isFirstLaunch', 'false');
+                        setInitialRouteName('MyCars');
+                    } else {
+                        console.log('User Logged In:', loggedInStatus === 'true');
+                        setInitialRouteName(loggedInStatus === 'true' ? 'DrawerScreens' : 'Login');
+                    }
+                }
+
+                SplashScreen.hide();
+            } catch (error) {
+                console.error('Failed to check app state', error);
+            }
+        };
+
+        checkAppState();
+    }, [isDevelopment]);
+
+    if (initialRouteName === null) {
+        return null; // Or a loading spinner
+    }
+
 
     return (
       <StripeProvider publishableKey="pk_test_51Ok46fKWEwsvQglH9hhqE9YhYSWHDpXG84EM5EaASAA4dnyBSAPzomo4ZDfcWJvK9EloBaQ8eOASrlgoBZhUBq7d00X4PRp02d">
       <NavigationContainer theme={theme}>
-          <Stack.Navigator
-              initialRouteName="MyCars"
-              screenOptions={{
-                  headerShown: false,
-              }}
-          >
+      <Stack.Navigator
+                initialRouteName={initialRouteName}
+                screenOptions={{ headerShown: false }}
+            >
               <Stack.Screen name="DrawerScreens" component={DrawerScreens} />
               <Stack.Screen name="OrderCheckout" component={AddressForm} options={{ headerShown: true }} />
               <Stack.Screen name="BookInsight" component={BookDetail} options={{ headerShown: true }} />
@@ -179,5 +249,24 @@ const App = () => {
   </StripeProvider>
     );
 };
-
+const styles = StyleSheet.create({
+    logoutContainer: {
+   
+        padding: 10,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+    },
+    logoutButton: {
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        backgroundColor: 'black',
+        borderRadius: 5,
+    },
+    logoutText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+});
 export default App;

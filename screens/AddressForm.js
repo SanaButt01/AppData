@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { ScrollView, Button, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 import { icons } from "../constants"; // Assuming you have icons imported
+import { useDispatch } from 'react-redux';
+import { clearCart } from '../ACTIONS'; // Ensure the correct import path for clearCart
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 
@@ -14,6 +16,9 @@ const AddressForm = ({ navigation, route }) => {
   const [phone_number, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [error, setError] = useState('');
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const dispatch = useDispatch(); // Initialize dispatch
 
   const handlePhoneNumberChange = (text) => {
     setPhoneNumber(text.trimStart());
@@ -44,52 +49,56 @@ const AddressForm = ({ navigation, route }) => {
   };
 
   const handlePayment = async () => {
-    console.log(grandTotal);
     if (validateForm()) {
       if (!cardDetails?.complete) {
         console.log('Please fill out the card details');
         return;
       }
-      
-      // Fetch the payment intent client secret from your backend
-const response = await axios.post(API_HOST + '/api/create-payment-intent', {
-  amount: grandTotal * 100, 
-}, {
-  headers: {
-    'Content-Type': 'application/json',
-  }
-});
 
-const { clientSecret } = response.data;
+      try {
+        const response = await axios.post(`${API_HOST}/api/create-payment-intent`, {
+          amount: grandTotal * 100,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
 
-const { error, paymentIntent } = await confirmPayment(clientSecret, {
-  type: 'Card',
-  paymentMethodType: 'Card',
-  billingDetails: {
-  },
-});
+        const { clientSecret } = response.data;
 
-if (error) {
-  console.log('Payment confirmation error', error);
-} else if (paymentIntent) {
-  console.log('Payment successful', paymentIntent);
-  const productTitles = cartItems.map(item => item.title);
-  const order_response = await axios.post(API_HOST + '/api/orders', {
-    email: email,
-    phone_number: phone_number,
-    address: address,
-    product: productTitles,
-    status: 'pending',
-    total: grandTotal,
-  }, {
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  });
+        const { error, paymentIntent } = await confirmPayment(clientSecret, {
+          type: 'Card',
+          paymentMethodType: 'Card',
+        });
 
-  console.log(order_response.data);
+        if (error) {
+          console.log('Payment confirmation error', error);
+        } else if (paymentIntent) {
+          console.log('Payment successful', paymentIntent);
 
-}
+          const productTitles = cartItems.map(item => item.title);
+          const order_response = await axios.post(`${API_HOST}/api/orders`, {
+            email: email,
+            phone_number: phone_number,
+            address: address,
+            product: productTitles,
+            status: 'pending',
+            total: grandTotal,
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+
+          console.log(order_response.data);
+
+          // Set payment success message and clear the cart
+          setPaymentSuccess(true);
+          dispatch(clearCart()); // Clear the shopping cart
+        }
+      } catch (err) {
+        console.log("Payment or order processing failed", err);
+      }
     }
   };
 
@@ -163,52 +172,15 @@ if (error) {
             style={styles.cardContainer}
             onCardChange={(cardDetails) => setCardDetails(cardDetails)}
           />
-{/* 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Card Number"
-              placeholderTextColor="#888"
-              onChangeText={handleCardNumberChange}
-              value={cardNumber}
-              keyboardType="numeric"
-              secureTextEntry
-            />
-
-            <Image source={icons.visa} style={styles.icon} />
-          </View>
-
-          <View style={styles.rowContainer}>
-            <View style={[styles.inputContainer, { width: '50%', marginRight: 2 }]}>
-              <TextInput
-                style={styles.input}
-                placeholder="Expiry(MM/YY)"
-                placeholderTextColor="#888"
-                onChangeText={handleExpiryChange}
-                value={expiry}
-                keyboardType="numeric"
-              />
-            </View>
-
-            <View style={[styles.inputContainer, { width: '50%' }]}>
-              <TextInput
-                style={styles.input}
-                placeholder="CVC"
-                placeholderTextColor="#888"
-                onChangeText={handleCVCChange}
-                value={cvc}
-                keyboardType="number-pad"
-                secureTextEntry
-              />
-              <Image source={icons.cvv} style={styles.icon} />
-            </View>
-          </View> */}
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <TouchableOpacity style={styles.button} onPress={handlePayment}>
             <Text style={styles.buttonText}>Pay</Text>
           </TouchableOpacity>
+          {paymentSuccess && (
+            <Text style={styles.successMessage}>Order paid successfully!</Text>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -285,14 +257,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 10,
-      color:"black"
+    color: "black"
   },
   totalText: {
     fontFamily: 'Roboto-Bold',
     fontSize: 25,
     marginLeft: 10,
     marginTop: 20,
-    color:"black"
+    color: "black"
   },
   icon: {
     width: 40,
@@ -302,7 +274,6 @@ const styles = StyleSheet.create({
   email: {
     width: 24,
     height: 24,
-    // marginLeft: 10,
   },
   card: {
     backgroundColor: '#FFFFFF',
@@ -316,6 +287,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     width: '100%',
     borderWidth: 2,
+  },
+  successMessage: {
+    color: 'black',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 20,
   },
 });
 

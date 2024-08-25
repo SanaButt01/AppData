@@ -1,8 +1,8 @@
-// userReducer.js
-import { SET_USER_PROFILE } from './ACTIONTYPES';
+import { SET_USER_PROFILE, LOGOUT_USER } from './ACTIONTYPES';
 
 const initialState = {
-  profile: null, // Initial state with no user profile
+  userId: null,
+  profile: null, // You can keep profile if you need it
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -10,7 +10,14 @@ export const userReducer = (state = initialState, action) => {
     case SET_USER_PROFILE:
       return {
         ...state,
-        profile: action.payload, // Update the user profile
+        userId: action.payload.userId, // Extract userId from profile
+        profile: action.payload, // Keep profile if needed
+      };
+    case LOGOUT_USER:
+      return {
+        ...state,
+        userId: null,
+        profile: null, // Clear profile data
       };
     default:
       return state;

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, ToastAndroid, Animated } from 'react-native';
 import { icons } from "../constants";
+import {CommonActions } from '@react-navigation/native';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 import { useDispatch } from 'react-redux';
 import { setUserProfile } from '../ACTIONS';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
   const localImage2 = require("../assets/sup.jpg");
@@ -55,12 +57,8 @@ const Login = ({ navigation }) => {
 
  
   const dispatch = useDispatch();
-
   const handleSign = async () => {
     if (validateForm()) {
-      console.log('Email:', email); // Log email
-      console.log('Password:', password); // Log password for debugging
-  
       try {
         const response = await axios.post(API_HOST + '/api/login', {
           email: email,
@@ -68,11 +66,16 @@ const Login = ({ navigation }) => {
         });
   
         if (response.status === 200) {
-          // Login successful
-          const userProfile = response.data; // Assuming the user profile is in response.data
-          dispatch(setUserProfile(userProfile)); // Dispatch the profile details to Redux
+          const userProfile = response.data;
+          dispatch(setUserProfile(userProfile)); // Dispatch user profile to Redux
+          await AsyncStorage.setItem('isLoggedIn', 'true'); // Set login status
           ToastAndroid.show('Login successful!', ToastAndroid.SHORT);
-          navigation.navigate('DrawerScreens', { screen: 'Dashboard' });
+          navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'DrawerScreens' }],
+            })
+        );
         } else {
           ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
         }
@@ -81,6 +84,7 @@ const Login = ({ navigation }) => {
       }
     }
   };
+  
   
   return (
     <View style={styles.container}>
