@@ -218,17 +218,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   emptyCartContainer: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.white,
     width: '100%',
-    height: 300,
+    height: 600,
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyCartText: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 40,
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black,
+    marginTop:350
   },
 });
 

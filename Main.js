@@ -4,6 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LogBox, View, Image, TouchableOpacity,StyleSheet,Text } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import { clearCart } from './ACTIONS';
+import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { icons,COLORS } from './constants';
 import UserProfile from './screens/UserProfile'
@@ -35,10 +37,13 @@ const theme = {
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const CustomDrawerContent = (props) => {
- 
+
+    const dispatch = useDispatch();
+    
     const handleLogout = async () => {
         try {
-            await AsyncStorage.removeItem('isLoggedIn'); // Clear login status
+            await AsyncStorage.removeItem('isLoggedIn');
+            dispatch(clearCart()); // Clear login status
             props.navigation.dispatch(
                 CommonActions.reset({
                     index: 0,
@@ -181,7 +186,7 @@ const App = () => {
                         await AsyncStorage.setItem('devLaunch', 'true');
                     } else {
                         // If the flag is set, show the regular initial route that point
-                        await AsyncStorage.removeItem('devLaunch');
+                        // await AsyncStorage.removeItem('devLaunch');
 
                         console.log('Dev Launch Flag is set, checking login status');
                         const firstLaunchFlag = await AsyncStorage.getItem('isFirstLaunch');
