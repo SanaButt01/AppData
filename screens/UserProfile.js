@@ -81,10 +81,13 @@ const Profile = ({ navigation }) => {
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
+        // Retrieve the token from AsyncStorage
+        const token = await AsyncStorage.getItem('rememberToken');
+  
         const formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
-
+  
         if (icon) {
           formData.append('icon', {
             uri: icon.uri,
@@ -92,13 +95,15 @@ const Profile = ({ navigation }) => {
             name: icon.fileName,
           });
         }
-
+  
+        // Make the API request with the token in the headers
         const response = await axios.post(`${API_HOST}/api/update-profile`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`, // Include the token in the headers
           },
         });
-
+  
         if (response.status === 200) {
           console.log('Profile update successful:', response.data);
           dispatch(setUserProfile(response.data));
@@ -113,6 +118,7 @@ const Profile = ({ navigation }) => {
       }
     }
   };
+  
 
   const [showText, setShowText] = useState(false);
 
@@ -180,7 +186,7 @@ const Profile = ({ navigation }) => {
                   placeholderTextColor="#888"
                   onChangeText={handleEmailChange}
                   value={email}
-                  keyboardType="email-address"
+                  editable={false}
                 />
               </View>
               {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
@@ -222,6 +228,10 @@ const styles = StyleSheet.create({
   imageContainer: {
     alignItems: 'center',
  
+  },
+  readOnlyInput: {
+    backgroundColor: '#e0e0e0', // Light gray background
+    color: '#888', // Lighter text color
   },
   topImage: {
     width: '100%',

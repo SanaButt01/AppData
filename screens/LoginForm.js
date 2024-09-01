@@ -66,16 +66,17 @@ const Login = ({ navigation }) => {
         });
   
         if (response.status === 200) {
-          const userProfile = response.data;
+          const { userProfile, rememberToken } = response.data; // Adjust based on your API response
           dispatch(setUserProfile(userProfile)); // Dispatch user profile to Redux
           await AsyncStorage.setItem('isLoggedIn', 'true'); // Set login status
+          await AsyncStorage.setItem('rememberToken', rememberToken); // Store the token
           ToastAndroid.show('Login successful!', ToastAndroid.SHORT);
           navigation.dispatch(
             CommonActions.reset({
                 index: 0,
                 routes: [{ name: 'DrawerScreens' }],
             })
-        );
+          );
         } else {
           ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
         }
@@ -84,6 +85,7 @@ const Login = ({ navigation }) => {
       }
     }
   };
+  
   
   
   return (
