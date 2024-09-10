@@ -81,6 +81,7 @@ const Login = ({ navigation }) => {
           ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
         }
       } catch (error) {
+        console.error(error);
         ToastAndroid.show('Login failed. Please check your credentials.', ToastAndroid.LONG);
       }
     }
