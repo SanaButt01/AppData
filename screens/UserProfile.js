@@ -79,44 +79,58 @@ const Profile = ({ navigation }) => {
   const validateEmail = (email) => /\S+@gmail\.com/.test(email);
 
   const handleUpdate = async () => {
-    if (validateForm()) {
-      try {
-        // Retrieve the token from AsyncStorage
-        const token = await AsyncStorage.getItem('rememberToken');
-  
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('email', email);
-  
-        if (icon) {
-          formData.append('icon', {
-            uri: icon.uri,
-            type: icon.type,
-            name: icon.fileName,
-          });
-        }
-  
-        // Make the API request with the token in the headers
-        const response = await axios.post(`${API_HOST}/api/update-profile`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`, // Include the token in the headers
-          },
-        });
-  
-        if (response.status === 200) {
-          console.log('Profile update successful:', response.data);
-          dispatch(setUserProfile(response.data));
-          ToastAndroid.show('Profile updated successfully!', ToastAndroid.LONG);
-        } else {
-          console.log('Profile update failed:', response.data);
-          ToastAndroid.show('Profile update failed. Please try again.', ToastAndroid.LONG);
-        }
-      } catch (error) {
-        console.error('Error updating profile:', error.response ? error.response.data : error.message);
-        ToastAndroid.show('Error updating profile. Please try again.', ToastAndroid.LONG);
-      }
-    }
+      // if (validateForm()) { // Assuming validateForm checks if form fields are valid
+  //   try {
+  //     // Retrieve the token from AsyncStorage
+  //     const tokenString = await AsyncStorage.getItem('rememberToken');
+  //     let token = '';
+
+  //     if (tokenString) {
+  //       try {
+  //         token = JSON.parse(tokenString); // Parse token if it's an object
+  //       } catch (e) {
+  //         console.error('Error parsing token:', e.message);
+  //         ToastAndroid.show('Error retrieving token. Please log in again.', ToastAndroid.LONG);
+  //         return; // Exit early if token parsing fails
+  //       }
+  //     } else {
+  //       ToastAndroid.show('No token found. Please log in again.', ToastAndroid.LONG);
+  //       return; // Exit early if no token is found
+  //     }
+
+  //     const formData = new FormData();
+  //     formData.append('name', name);
+  //     formData.append('email', email);
+
+  //     if (icon) {
+  //       formData.append('icon', {
+  //         uri: icon.uri,
+  //         type: icon.type,
+  //         name: icon.fileName,
+  //       });
+  //     }
+
+  //     // Make the API request with the token in the headers
+  //     const response = await axios.post(`${API_HOST}/api/update-profile`, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //         Authorization: `Bearer ${token}`, // Include the token in the headers
+  //       },
+  //     });
+
+  //     if (response.status === 200) {
+  //       console.log('Profile update successful:', response.data);
+  //       dispatch(setUserProfile(response.data)); // Dispatch updated profile to Redux
+  //       ToastAndroid.show('Profile updated successfully!', ToastAndroid.LONG);
+  //     } else {
+  //       console.log('Profile update failed:', response.data);
+  //       ToastAndroid.show('Profile update failed. Please try again.', ToastAndroid.LONG);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating profile:', error.response ? error.response.data : error.message);
+  //     ToastAndroid.show('Error updating profile. Please try again.', ToastAndroid.LONG);
+  //   }
+  // }
   };
   
 
@@ -165,6 +179,7 @@ const Profile = ({ navigation }) => {
                   </View>
                 </TouchableOpacity>
               )}
+              <Text style={styles.emailText}>{email}</Text>
             </View>
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
@@ -178,17 +193,7 @@ const Profile = ({ navigation }) => {
                 />
               </View>
               {errorUsername ? <Text style={styles.errorText}>{errorUsername}</Text> : null}
-              <View style={styles.inputContainer}>
-                <Image source={icons.email2} style={styles.icon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor="#888"
-                  onChangeText={handleEmailChange}
-                  value={email}
-                  editable={false}
-                />
-              </View>
+             
               {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
               <TouchableOpacity style={styles.button} onPress={handleUpdate}>
                 <Text style={styles.buttonText}>Update</Text>
@@ -211,10 +216,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  emailText:{
+    paddingTop:10
+  },
   cardContainer: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
-    padding: 20,
+    paddingVertical: 80,
+    paddingHorizontal: 30,
     width: '90%',
     shadowColor: '#000',
     shadowOpacity: 0.2,
