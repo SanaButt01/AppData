@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 import { setUserProfile } from '../ACTIONS';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Profile = ({ navigation }) => {
 
@@ -25,7 +27,7 @@ const Profile = ({ navigation }) => {
       console.log('Profile:', userProfile.user); // Log the entire profile
       setUsername(userProfile.user.name || '');
       setEmail(userProfile.user.email || '');
-      setIcon(userProfile.user.icon ? `${API_HOST}/storage/${userProfile.user.icon}` : null);
+      setIcon(userProfile.user.icon ? `${API_HOST}/storage/icons/${userProfile.user.icon}` : null);
     }
   }, [userProfile]);
 
@@ -83,7 +85,7 @@ const Profile = ({ navigation }) => {
       try {
         // Retrieve the token from AsyncStorage
         const token = await AsyncStorage.getItem('rememberToken');
-
+        console.log('Token:', token);
         const formData = new FormData();
         formData.append('remember_token', token); // Add the token to form data
         formData.append('name', name);
@@ -165,6 +167,7 @@ const Profile = ({ navigation }) => {
                   </View>
                 </TouchableOpacity>
               )}
+              <Text style={styles.emailText}>{email}</Text>
             </View>
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
@@ -178,17 +181,7 @@ const Profile = ({ navigation }) => {
                 />
               </View>
               {errorUsername ? <Text style={styles.errorText}>{errorUsername}</Text> : null}
-              <View style={styles.inputContainer}>
-                <Image source={icons.email2} style={styles.icon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor="#888"
-                  onChangeText={handleEmailChange}
-                  value={email}
-                  editable={false}
-                />
-              </View>
+             
               {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
               <TouchableOpacity style={styles.button} onPress={handleUpdate}>
                 <Text style={styles.buttonText}>Update</Text>
@@ -211,10 +204,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  emailText:{
+    paddingTop:10
+  },
   cardContainer: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
-    padding: 20,
+    paddingVertical: 80,
+    paddingHorizontal: 30,
     width: '90%',
     shadowColor: '#000',
     shadowOpacity: 0.2,

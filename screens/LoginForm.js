@@ -66,15 +66,23 @@ const Login = ({ navigation }) => {
         });
   
         if (response.status === 200) {
-          const { userProfile, rememberToken } = response.data; // Adjust based on your API response
-          dispatch(setUserProfile(userProfile)); // Dispatch user profile to Redux
-          await AsyncStorage.setItem('isLoggedIn', 'true'); // Set login status
-          await AsyncStorage.setItem('rememberToken', rememberToken); // Store the token
+          const userProfile = response.data;
+          const { remember_token: rememberToken } = response.data;
+  
+          // Dispatch user profile to Redux
+          dispatch(setUserProfile(userProfile)); 
+  
+          // Set login status
+          await AsyncStorage.setItem('isLoggedIn', 'true');
+  
+          // Convert rememberToken to a JSON string
+          await AsyncStorage.setItem('rememberToken', rememberToken); 
+  
           ToastAndroid.show('Login successful!', ToastAndroid.SHORT);
           navigation.dispatch(
             CommonActions.reset({
-                index: 0,
-                routes: [{ name: 'DrawerScreens' }],
+              index: 0,
+              routes: [{ name: 'DrawerScreens' }],
             })
           );
         } else {
@@ -86,7 +94,6 @@ const Login = ({ navigation }) => {
       }
     }
   };
-  
   
   
   return (

@@ -7,6 +7,7 @@ import { clearCart } from '../ACTIONS'; // Ensure the correct import path for cl
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 
+
 const AddressForm = ({ navigation, route }) => {
   const { cartItems, grandTotal } = route.params; // Extracting params from navigation route
   const [cardDetails, setCardDetails] = useState(null);
@@ -54,7 +55,7 @@ const AddressForm = ({ navigation, route }) => {
         console.log('Please fill out the card details');
         return;
       }
-
+  
       try {
         const response = await axios.post(`${API_HOST}/api/create-payment-intent`, {
           amount: grandTotal * 100,
@@ -63,44 +64,70 @@ const AddressForm = ({ navigation, route }) => {
             'Content-Type': 'application/json',
           }
         });
-
+  
         const { clientSecret } = response.data;
-
+  
         const { error, paymentIntent } = await confirmPayment(clientSecret, {
           type: 'Card',
           paymentMethodType: 'Card',
         });
-
+  
         if (error) {
-          console.log('Payment confirmation error', error);
+          console.log('Payment confirmation error:', error.message);
+          return; // Exit on payment confirmation error
         } else if (paymentIntent) {
           console.log('Payment successful', paymentIntent);
-
+  
           const productTitles = cartItems.map(item => item.title);
-          const order_response = await axios.post(`${API_HOST}/api/orders`, {
+          
+          const orderPayload = {
             email: email,
             phone_number: phone_number,
             address: address,
             product: productTitles,
             status: 'pending',
             total: grandTotal,
-          }, {
-            headers: {
-              'Content-Type': 'application/json',
+          };
+          console.log('Order payload:', orderPayload);
+  
+          try {
+            const order_response = await axios.post(`${API_HOST}/api/orders`, orderPayload, {
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+  
+            console.log('Order response:', order_response.data);
+  
+            // Set payment success message and clear the cart
+            setPaymentSuccess(true);
+            dispatch(clearCart()); // Clear the shopping cart
+  
+          } catch (orderError) {
+            console.log('Order processing failed:', orderError.response?.data || orderError.message);
+  
+            // Check for specific error codes or messages
+            if (orderError.response?.status === 422) {
+              if (orderError.response?.data?.errors?.email) {
+                setError('This email has already been taken. Please use a different email.');
+              } else {
+                setError('Order creation failed. Please try again.');
+              }
+            } else {
+              setError('An unexpected error occurred during order creation.');
             }
-          });
-
-          console.log(order_response.data);
-
-          // Set payment success message and clear the cart
-          setPaymentSuccess(true);
-          dispatch(clearCart()); // Clear the shopping cart
+          }
+  
+        } else {
+          console.log('Unexpected case: Neither error nor paymentIntent was returned');
         }
       } catch (err) {
-        console.log("Payment or order processing failed", err);
+        console.log("Payment or order processing failed:", err.response?.data || err.message);
       }
     }
   };
+  
+
 
   return (
     <View style={styles.container}>

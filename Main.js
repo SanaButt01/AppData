@@ -37,13 +37,17 @@ const theme = {
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const CustomDrawerContent = (props) => {
-
     const dispatch = useDispatch();
-    
+
     const handleLogout = async () => {
         try {
+            // Clear the AsyncStorage item indicating the login status
             await AsyncStorage.removeItem('isLoggedIn');
-            dispatch(clearCart()); // Clear login status
+            
+            // Dispatch action to clear the cart
+            dispatch(clearCart());
+
+            // Navigate to the 'Login' screen by resetting the navigation state
             props.navigation.dispatch(
                 CommonActions.reset({
                     index: 0,
@@ -54,6 +58,7 @@ const CustomDrawerContent = (props) => {
             console.error('Logout failed', error);
         }
     };
+
     return (
         <DrawerContentScrollView {...props}>
             <View style={{ alignItems: 'center', marginTop: 40 }}>
@@ -68,6 +73,7 @@ const CustomDrawerContent = (props) => {
         </DrawerContentScrollView>
     );
 };
+
 const DrawerScreens = () => {
     return (
         <Drawer.Navigator

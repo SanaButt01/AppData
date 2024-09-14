@@ -7,6 +7,7 @@ const SearchBar = ({ onSearch }) => {
 
   useEffect(() => {
     onSearch(searchQuery);
+    // console.log(searchQuery);
   }, [searchQuery]);
 
   return (
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     zIndex: 999,
-    marginTop: 100,
+    marginTop: 20, // high margin was blocking the book list. Reduced it from 100 to 20
     borderColor: 'black',
     borderWidth: 1,
   },
@@ -47,7 +48,8 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     width: '100%',
     fontFamily: 'PlayfairDisplay-Bold',
-    paddingTop:5
+    paddingTop:5,
+    color: 'black',
   },
 });
 
