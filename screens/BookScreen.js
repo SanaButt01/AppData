@@ -1,31 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, Image, TouchableOpacity, Button, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { addtocart } from "../ACTIONS";
-import { useSelector, useDispatch } from 'react-redux';
-import SearchBar from "./SearchBar";
-import { COLORS, FONTS, SIZES, images, icons } from '../constants'; 
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Button,
+  Text,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {addtocart} from '../ACTIONS';
+import {useSelector, useDispatch} from 'react-redux';
+import SearchBar from './SearchBar';
+import {COLORS, FONTS, SIZES, images, icons} from '../constants';
 import axios from 'axios';
-import { API_HOST } from '../myenv';
+import {API_HOST} from '../myenv';
 
-const BookScreen = ({ route }) => {
-  const { categoryId } = route.params;
+const BookScreen = ({route}) => {
+  const {categoryId} = route.params;
   const [books, setBooks] = useState([]);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const cartData = useSelector((state) => state.cart); // Update this to match combined reducer key
+  const cartData = useSelector(state => state.cart); // Update this to match combined reducer key
   const [cartItems, setCartItems] = useState(0);
   const [addedToCart, setAddedToCart] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [booksData, setBooksData] = useState([]);
-  
-  const texts = [
-    'Top books!',
-    'New arrivals!',
-    'Best deals!',
-    'Hidden gems!'
-  ];
+
+  const texts = ['Top books!', 'New arrivals!', 'Best deals!', 'Hidden gems!'];
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
@@ -34,18 +37,19 @@ const BookScreen = ({ route }) => {
   };
 
   const fetchBooks = () => {
-    axios.get(`${API_HOST}/api/books`, {
-      params: {
-        category_id: categoryId
-      }
-    })
-    .then(response => {
-      const data = response.data;
-      setBooks(data);
-    })
-    .catch(error => {
-      console.error("Error fetching books:", error);
-    });
+    axios
+      .get(`${API_HOST}/api/books`, {
+        params: {
+          category_id: categoryId,
+        },
+      })
+      .then(response => {
+        const data = response.data;
+        setBooks(data);
+      })
+      .catch(error => {
+        console.error('Error fetching books:', error);
+      });
   };
 
   useEffect(() => {
@@ -54,7 +58,7 @@ const BookScreen = ({ route }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
+      setCurrentTextIndex(prevIndex => (prevIndex + 1) % texts.length);
     }, 1000); // Change message every second
     return () => clearInterval(interval);
   }, []);
@@ -65,59 +69,88 @@ const BookScreen = ({ route }) => {
 
   useEffect(() => {
     const updatedAddedToCart = {};
-    cartData.forEach((item) => {
+    cartData.forEach(item => {
       updatedAddedToCart[item.title] = true;
     });
     setAddedToCart(updatedAddedToCart);
   }, [cartData]);
 
-  const handleAddtoCart = (item) => {
-    const discountedPrice = item.disc ? item.price - (item.price * item.disc / 100) : item.price;
+  const handleAddtoCart = item => {
+    const discountedPrice = item.disc
+      ? item.price - (item.price * item.disc) / 100
+      : item.price;
 
     if (addedToCart[item.title]) {
       // If already added to cart, remove it
       // Dispatch action to remove item from cart
     } else {
-      dispatch(addtocart({ ...item, price: discountedPrice }));
+      dispatch(addtocart({...item, price: discountedPrice}));
     }
   };
 
-  const navigateToBookDetail = (book) => {
+  const navigateToBookDetail = book => {
     // Pass book details to BookDetail route
-    navigation.navigate('BookInsight', { book });
+    navigation.navigate('BookInsight', {book});
+  };
+  const handleSearch = query => {
+    if (query.trim() === '') {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    axios
+      .get(`${API_HOST}/api/books/search`, {
+        params: {query},
+      })
+      .then(response => {
+        const data = response.data;
+        setSearchResults(data);
+        setBooksData(data);
+      })
+      .catch(error => {
+        console.error('Error searching books:', error);
+        // Fallback to client-side filtering if API call fails
+        const filteredBooks = books.filter(
+          book =>
+            book.title.toLowerCase().includes(query.toLowerCase()) ||
+            book.author.toLowerCase().includes(query.toLowerCase()),
+        );
+        setSearchResults(filteredBooks);
+        setBooksData(filteredBooks);
+      });
   };
 
-  const handleSearch = (query) => {
-    const filteredData = query.trim() === "" ?
-      [] :
-      booksData.filter(item =>
-        item.title.toLowerCase().includes(query.toLowerCase()) ||
-        item.author.toLowerCase().includes(query.toLowerCase())
-      );
-
-    setSearchResults(filteredData);
-    setIsSearching(query.trim() !== "");
+  const getImageSource = icon => {
+    return {uri: `${API_HOST}/storage/${icon}`};
   };
 
-  const getImageSource = (icon) => {
-    return { uri: `${API_HOST}/storage/${icon}` };
-  };
-
-  const renderBookItem = ({ item }) => {
-    const discountedPrice = item.price - (item.price * item.disc / 100);
+  const renderBookItem = ({item}) => {
+    const discountedPrice = item.price - (item.price * item.disc) / 100;
 
     return (
-      <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item)}>
+      <TouchableOpacity
+        style={styles.bookContainer}
+        onPress={() => navigateToBookDetail(item)}>
         <View style={styles.imageContainer}>
-          <Image source={getImageSource(item.path)} resizeMode="cover" style={styles.bookImage} />
+          <Image
+            source={getImageSource(item.path)}
+            resizeMode="cover"
+            style={styles.bookImage}
+          />
         </View>
         <View style={styles.bookDetails}>
           <Text style={styles.bookTitle}>{item.title}</Text>
           <Text style={styles.author}>By: {item.author}</Text>
           <View style={styles.priceContainer}>
-            <Text style={item.disc ? styles.priceWithDiscount : styles.price}>Rs. {item.price}</Text>
+            <Text style={item.disc ? styles.priceWithDiscount : styles.price}>
+              Rs. {item.price}
+            </Text>
             {item.disc && (
-              <Text style={styles.discountedPrice}>Rs. {discountedPrice.toFixed(2)}</Text>
+              <Text style={styles.discountedPrice}>
+                Rs. {discountedPrice.toFixed(2)}
+              </Text>
             )}
           </View>
           {item.disc && (
@@ -127,7 +160,7 @@ const BookScreen = ({ route }) => {
           )}
           <Button
             onPress={() => handleAddtoCart(item)}
-            color='black'
+            color="black"
             title={addedToCart[item.title] ? 'Added to Cart' : 'ADD TO CART'}
             disabled={addedToCart[item.title]}
             style={styles.addButton}
@@ -173,12 +206,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     elevation: 4,
     borderBottomLeftRadius: 84,
-    borderBottomRightRadius: 84
+    borderBottomRightRadius: 84,
   },
   headerMessage: {
     fontSize: 23,
     fontWeight: 'bold',
-    color: "white"
+    color: 'white',
   },
   cartIconContainer: {
     flexDirection: 'row',
@@ -194,7 +227,7 @@ const styles = StyleSheet.create({
   cartItemCount: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: "black"
+    color: 'black',
   },
   bookList: {
     paddingVertical: 70,
@@ -208,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     padding: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 3,
     elevation: 2,
@@ -231,7 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: "black"
+    color: 'black',
   },
   author: {
     fontSize: 14,

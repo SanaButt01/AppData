@@ -8,7 +8,7 @@ import { API_HOST } from '../myenv';
 import { setUserProfile } from '../ACTIONS';
 
 const Profile = ({ navigation }) => {
-  
+
   const localImage2 = require("../assets/sup.jpg");
   const [icon, setIcon] = useState(null);
   const [errorUsername, setErrorUsername] = useState('');
@@ -83,27 +83,27 @@ const Profile = ({ navigation }) => {
       try {
         // Retrieve the token from AsyncStorage
         const token = await AsyncStorage.getItem('rememberToken');
-  
+
         const formData = new FormData();
+        formData.append('remember_token', token); // Add the token to form data
         formData.append('name', name);
         formData.append('email', email);
-  
-        if (icon) {
+
+        if (icon && icon.uri) {
           formData.append('icon', {
             uri: icon.uri,
-            type: icon.type,
-            name: icon.fileName,
+            type: icon.type || 'image/jpeg', // Provide a default type if not available
+            name: icon.fileName || 'photo.jpg', // Provide a default name if not available
           });
         }
-  
-        // Make the API request with the token in the headers
+
+        // Make the API request without the Authorization header
         const response = await axios.post(`${API_HOST}/api/update-profile`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`, // Include the token in the headers
           },
         });
-  
+
         if (response.status === 200) {
           console.log('Profile update successful:', response.data);
           dispatch(setUserProfile(response.data));
@@ -118,7 +118,7 @@ const Profile = ({ navigation }) => {
       }
     }
   };
-  
+
 
   const [showText, setShowText] = useState(false);
 
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     alignItems: 'center',
- 
+
   },
   readOnlyInput: {
     backgroundColor: '#e0e0e0', // Light gray background
