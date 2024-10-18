@@ -20,6 +20,7 @@ const Profile = ({ navigation }) => {
   const [name, setUsername] = useState('');
   const [email, setEmail] = useState('');
 
+ 
 
   useEffect(() => {
     console.log('Profile data:', userProfile);
@@ -27,15 +28,16 @@ const Profile = ({ navigation }) => {
       console.log('Profile:', userProfile.user); // Log the entire profile
       setUsername(userProfile.user.name || '');
       setEmail(userProfile.user.email || '');
-      setIcon(userProfile.user.icon ? `${API_HOST}/storage/icons/${userProfile.user.icon}` : null);
+      setIcon(userProfile.user.icon ? `${API_HOST}/storage/${userProfile.user.icon}` : null);
     }
   }, [userProfile]);
 
+  
   useEffect(() => {
     console.log('Current state:', { name, email });
   }, [name, email]);
   const handleNameChange = (text) => setUsername(text.trimStart());
-  const handleEmailChange = (text) => setEmail(text.trimStart());
+  
 
 
   const selectImage = () => {

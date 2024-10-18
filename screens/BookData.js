@@ -10,7 +10,7 @@ const messages = [
   'Explore the latest book categories!',
   'Find your next favorite book!',
   'Discover new genres and authors!',
-  'Check out our exclusive collections!',
+  'Check out our exclusive collection !',
   
 ];
 

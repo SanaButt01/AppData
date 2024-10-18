@@ -55,11 +55,10 @@ const BookScreen = ({route}) => {
   }, [categoryId]); // Ensure categoryId is in the dependency array
 
 
-  const navigateToBookDetail = (bookId) => {
-    // Pass booksData to BookDetail route
-    navigation.navigate('BookDetail', { book_id: bookId, booksData });
+  const navigateToBookDetail = (book) => {
+    // Pass book details to BookDetail route
+    navigation.navigate('BookInsight', { book });
   };
-
 
 
   useEffect(() => {
@@ -130,7 +129,7 @@ const BookScreen = ({route}) => {
   };
 
   const renderBookItem = ({ item }) => (
-    <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item.book_id)}>
+    <TouchableOpacity style={styles.bookContainer} onPress={() => navigateToBookDetail(item)}>
       <View style={styles.imageContainer}>
         <Image source={getImageSource(item.path)} resizeMode="cover" style={styles.bookImage} />
       </View>
