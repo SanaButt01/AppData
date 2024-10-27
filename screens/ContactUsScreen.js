@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Linking, TouchableOpacity, Image } from 'react-
 import { icons } from "../constants";// Update this path to where your icons are stored
 
 const ContactUsScreen = () => {
-  const appEmail = 'bookscity@gmail.com';
+  const appEmail = 'bookscityinfo@gmail.com';
   const appAddressLine1 = '123 B_Block Model Town';
   const appAddressLine2 = 'Gujranwala, Pakistan';
 

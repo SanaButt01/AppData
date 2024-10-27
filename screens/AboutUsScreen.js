@@ -11,15 +11,15 @@ const AboutUsScreen = () => {
       />
       
       <Text style={styles.description}>
-        Welcome to <Text style={styles.brandName}>Bookscity</Text>, your number one source for all things books. We're dedicated to giving you the very best of books, with a focus on quality, customer service, and uniqueness.
+        Welcome to <Text style={styles.brandName}>BooksCity</Text>, your number one source for all things books. We're dedicated to giving you the very best of books, with a focus on quality, customer service, and uniqueness.
       </Text>
       <Text style={styles.description}>
-        Founded in 2024, <Text style={styles.brandName}>Bookscity</Text> has come a long way from its beginnings. 
+        Founded in 2024, <Text style={styles.brandName}>BooksCity</Text> has come a long way from its beginnings. 
       </Text>
       <Text style={styles.description}>
         We hope you enjoy our products as much as we enjoy offering them to you. If you have any questions or comments, please don't hesitate to contact us.
       </Text>
-      <Text style={styles.footer}>Sincerely, <Text style={styles.brandName}>Bookscity Team</Text></Text>
+      <Text style={styles.footer}>Sincerely, <Text style={styles.brandName}>BooksCity Team</Text></Text>
     </ScrollView>
   );
 };

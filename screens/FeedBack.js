@@ -38,24 +38,31 @@ const validateEmail = (email) => {
 //   };
   
 
-  const handleForm = async () => {
-    if (validateForm()) {
-      try {
-        const res = await axios.post(API_HOST +'/api/feedbacks', {
-          message: message,
-          email: email
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-  
-        Alert.alert('Success', ' successful!');
-      } catch (error) {
-        console.error(error);
-      }
+const handleForm = async () => {
+  if (validateForm()) {
+    try {
+      const res = await axios.post(API_HOST + '/api/feedbacks', {
+        message: message,
+        email: email
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      Alert.alert('Success', 'Feedback submitted successfully!');
+      
+      // Clear the input fields after submission
+      setMessage('');
+      setEmail('');
+      setError(''); // Clear any previous error message
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
-  };
+  }
+};
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>

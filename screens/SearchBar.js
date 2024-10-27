@@ -14,7 +14,7 @@ const SearchBar = ({ onSearch }) => {
     <View style={[styles.container, { width: 340, flexDirection: 'row' }]}>
       <TextInput
         style={styles.input}
-        placeholder="Search by Title|Author Name..."
+        placeholder="Search by Book Title..."
         placeholderTextColor="#888"
         value={searchQuery}
         onChangeText={(text) => setSearchQuery(text)}
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     zIndex: 999,
-    marginTop: 20, // high margin was blocking the book list. Reduced it from 100 to 20
+    marginTop: 100, // high margin was blocking the book list. Reduced it from 100 to 20
     borderColor: 'black',
     borderWidth: 1,
   },

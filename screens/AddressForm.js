@@ -102,7 +102,10 @@ const AddressForm = ({ navigation, route }) => {
             // Set payment success message and clear the cart
             setPaymentSuccess(true);
             dispatch(clearCart()); // Clear the shopping cart
-  
+            setEmail('');
+            setPhoneNumber('');
+            setAddress('');
+            setCardDetails(null);
           } catch (orderError) {
             console.log('Order processing failed:', orderError.response?.data || orderError.message);
   
