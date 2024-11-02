@@ -23,18 +23,19 @@ const Profile = ({ navigation }) => {
  
 
   useEffect(() => {
-    console.log('Profile data:', userProfile);
+    // console.log('Profile data:', userProfile);
     if (userProfile && userProfile.user) {
-      console.log('Profile:', userProfile.user); // Log the entire profile
+      // console.log('Profile:', userProfile.user); // Log the entire profile
       setUsername(userProfile.user.name || '');
       setEmail(userProfile.user.email || '');
-      setIcon(userProfile.user.icon ? `${API_HOST}/storage/${userProfile.user.icon}` : null);
+      // console.log(`${API_HOST}/storage/app/public/icons/${userProfile.user.icon}`);
+      setIcon(userProfile.user.icon ? `${API_HOST}/storage/icons/${userProfile.user.icon}` : null);
     }
   }, [userProfile]);
 
   
   useEffect(() => {
-    console.log('Current state:', { name, email });
+    // console.log('Current state:', { name, email });
   }, [name, email]);
   const handleNameChange = (text) => setUsername(text.trimStart());
   
