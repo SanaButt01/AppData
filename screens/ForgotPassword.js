@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, ToastAndroid } from 'react-native';
+import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, ToastAndroid, Alert } from 'react-native';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
-import { icons } from "../constants"; // Import your icons
+import { icons, images } from "../constants"; // Import your icons
 
-const ForgotPassword = ({ route,  navigation }) => {
+const ForgotPassword = ({ route, navigation }) => {
   const { email, authToken } = route.params;
   const localImage = require("../assets/sup.jpg"); // Local image
 
@@ -13,9 +13,15 @@ const ForgotPassword = ({ route,  navigation }) => {
   const [errorNewPassword, setErrorNewPassword] = useState('');
   const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
 
-  const handleNewPasswordChange = (text) => setNewPassword(text.trimStart());
-  const handleConfirmPasswordChange = (text) => setConfirmPassword(text.trimStart());
+  const handleNewPasswordChange = (text) => {
+    setNewPassword(text.trimStart());
+    if (errorNewPassword) setErrorNewPassword(''); // Clear error message on input
+  };
 
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text.trimStart());
+    if (errorConfirmPassword) setErrorConfirmPassword(''); // Clear error message on input
+  };
   const validateForm = () => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
     let valid = true;
@@ -33,7 +39,10 @@ const ForgotPassword = ({ route,  navigation }) => {
       valid = false;
     }
 
-    if (confirmPassword !== newPassword) {
+    if (!confirmPassword.trim()) {
+      setErrorConfirmPassword('Please confirm your password.');
+      valid = false;
+    } else if (confirmPassword !== newPassword) {
       setErrorConfirmPassword('Passwords do not match.');
       valid = false;
     }
@@ -42,9 +51,13 @@ const ForgotPassword = ({ route,  navigation }) => {
   };
 
   const handleResetPassword = async () => {
-    if (validateForm()) {
+    // Validate the form and show error messages if validation fails
+    if (!validateForm()) {
+      return; // If validation fails, exit the function early
+    }
 
-      axios.post(API_HOST + '/api/password-reset/reset-password', { email, auth_token: authToken, password: newPassword, password_confirmation: newPassword })
+    // Proceed with the API call if validation passes
+    axios.post(API_HOST + '/api/password-reset/reset-password', { email, auth_token: authToken, password: newPassword, password_confirmation: newPassword })
       .then(response => {
         ToastAndroid.show('Password Reset Successful', ToastAndroid.SHORT);
         // Navigate to login or another appropriate screen
@@ -54,9 +67,6 @@ const ForgotPassword = ({ route,  navigation }) => {
         console.error(error);
         Alert.alert('Error', 'Failed to reset password. Please try again.');
       });
-      
-    }
-
   };
 
   return (
@@ -64,7 +74,7 @@ const ForgotPassword = ({ route,  navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <View style={styles.cardContainer}>
           <View style={styles.imageContainer}>
-            <Image source={localImage} style={styles.topImage} />
+            <Image source={images.reenter} style={styles.topImage} />
           </View>
           <Text style={styles.title}>Reset Password</Text>
           <View style={styles.formContainer}>
@@ -111,7 +121,7 @@ const ForgotPassword = ({ route,  navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'lightgrey',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -121,33 +131,31 @@ const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
-    padding: 20,
+    paddingVertical: 70,
     width: '90%',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
     elevation: 5,
   },
   imageContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 120,
+    marginTop: -50,
   },
   topImage: {
     width: '100%',
-    height: 200,
+    height: 250,
     resizeMode: 'cover',
-    
   },
   title: {
     color: '#000',
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
-    marginTop: -50,
+    marginBottom: 10,
+    marginTop: -90,
   },
   formContainer: {
-    width: '100%',
+    width: '90%',
+    alignSelf: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -157,11 +165,8 @@ const styles = StyleSheet.create({
     borderColor: '#CCC',
     borderRadius: 25,
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     backgroundColor: '#FFF',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
     elevation: 3,
   },
   icon: {
@@ -186,11 +191,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 3,
-    marginTop: 20,
+    marginTop: 5,
   },
   buttonText: {
     color: '#FFFFFF',
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
   loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   loginText: {
     color: '#666',

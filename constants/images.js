@@ -23,8 +23,14 @@ export const p3=require("../assets/images/p3.jpg");
 export const cmp=require("../assets/images/cmp.jpg");
 export const comp=require("../assets/images/comp.jpg");
 export const chem=require("../assets/images/chem.jpg");
+export const resetPass=require("../assets/images/reset.png");
+export const order=require("../assets/images/order.png");
+export const code=require("../assets/images/code.png");
+export const feedback=require("../assets/images/feedback.jpg");
+export const reenter=require("../assets/images/reenter.png");
 export default {
     chem,
+    reenter,
     comp,
     eng1,
     eng2,
@@ -47,7 +53,11 @@ export default {
     p1,
     p2,
     p3,
+    resetPass,
    cmp,
+   order,
+   feedback,
+   code
     
 }
 // instead of adding images in home.js directly we have to create a image.js file in order to aviod mess

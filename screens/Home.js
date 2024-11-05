@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
@@ -13,11 +13,10 @@ const Home = () => {
     'Limited time offers !'
   ];
 
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [messageIndex, setMessageIndex] = useState(0);
+  const navigation = useNavigation();
 
   const fetchCategories = () => {
     axios.get(`${API_HOST}/api/categories`)
@@ -67,7 +66,7 @@ const Home = () => {
       ))}
 
       <View style={styles.header}>
-        <Text style={styles.headerMessage}>{texts[currentTextIndex]}</Text>
+        <Text style={styles.headerMessage}>{texts[messageIndex]}</Text>
       </View>
     </SafeAreaView>
   );
@@ -76,7 +75,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     padding: 40,
     backgroundColor: 'black',

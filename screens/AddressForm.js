@@ -6,12 +6,14 @@ import { useDispatch } from 'react-redux';
 import { clearCart } from '../ACTIONS'; // Ensure the correct import path for clearCart
 import axios from 'axios';
 import { API_HOST } from '../myenv';
+import { useNavigation } from '@react-navigation/native';
 
 
 const AddressForm = ({ navigation, route }) => {
   const { cartItems, grandTotal } = route.params; // Extracting params from navigation route
   const [cardDetails, setCardDetails] = useState(null);
   const { confirmPayment } = useStripe();
+  
 
   const [email, setEmail] = useState('');
   const [phone_number, setPhoneNumber] = useState('');
@@ -74,7 +76,7 @@ const AddressForm = ({ navigation, route }) => {
   
         if (error) {
           console.log('Payment confirmation error:', error.message);
-          return; // Exit on payment confirmation error
+          return;
         } else if (paymentIntent) {
           console.log('Payment successful', paymentIntent);
   
@@ -99,17 +101,17 @@ const AddressForm = ({ navigation, route }) => {
   
             console.log('Order response:', order_response.data);
   
-            // Set payment success message and clear the cart
+            // Set payment success message, clear the cart, and navigate to success screen
             setPaymentSuccess(true);
-            dispatch(clearCart()); // Clear the shopping cart
+            dispatch(clearCart());
             setEmail('');
             setPhoneNumber('');
             setAddress('');
             setCardDetails(null);
+            navigation.navigate('OrderSuccessScreen'); // Navigate to success screen
           } catch (orderError) {
             console.log('Order processing failed:', orderError.response?.data || orderError.message);
   
-            // Check for specific error codes or messages
             if (orderError.response?.status === 422) {
               if (orderError.response?.data?.errors?.email) {
                 setError('This email has already been taken. Please use a different email.');
@@ -129,6 +131,7 @@ const AddressForm = ({ navigation, route }) => {
       }
     }
   };
+  
   
 
 

@@ -19,11 +19,26 @@ const Register = ({ navigation }) => {
   const [errorPassword, setErrorPassword] = useState('');
   const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
-
-  const handleNameChange = (text) => setUsername(text.trimStart());
-  const handlePasswordChange = (text) => setPassword(text.trimStart());
-  const handleConfirmPasswordChange = (text) => setConfirmPassword(text.trimStart());
-  const handleEmailChange = (text) => setEmail(text.trimStart());
+  const [errorIcon, setErrorIcon] = useState('');
+  const handleNameChange = (text) => {
+    setUsername(text.trimStart());
+    if (errorUsername) setErrorUsername(''); // Clear error when typing
+  };
+  
+  const handlePasswordChange = (text) => {
+    setPassword(text.trimStart());
+    if (errorPassword) setErrorPassword(''); // Clear error when typing
+  };
+  
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text.trimStart());
+    if (errorConfirmPassword) setErrorConfirmPassword(''); // Clear error when typing
+  };
+  
+  const handleEmailChange = (text) => {
+    setEmail(text.trimStart());
+    if (errorEmail) setErrorEmail(''); // Clear error when typing
+  };
   const toggleShowPassword = () => setShowPassword(!showPassword);
   const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
@@ -43,6 +58,7 @@ const Register = ({ navigation }) => {
         console.log('ImagePicker Error:', response.error);
       } else {
         setIcon(response.assets[0]);
+        setErrorIcon('');
       }
     });
   };
@@ -86,6 +102,11 @@ const Register = ({ navigation }) => {
       setErrorConfirmPassword('Passwords do not match.');
       valid = false;
     }
+    if (!icon) { // Check if profile photo is not selected
+      setErrorIcon('Please select a profile photo.');
+      valid = false;
+    }
+
 
     return valid;
   };
@@ -176,6 +197,7 @@ const Register = ({ navigation }) => {
               </TouchableOpacity>
             )}
           </View>
+          {errorIcon ? <Text style={styles.errorText}>{errorIcon}</Text> : null}
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
               <Image source={icons.page_icon} style={styles.icon} />

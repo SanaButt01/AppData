@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   discountContainer: {
     position: 'absolute',
     top: -10,
-    right: 250,
+    right: 230,
     backgroundColor: 'red',
     paddingVertical: 5,
     paddingHorizontal: 10,

@@ -9,6 +9,7 @@ const BookDetail = ({ route, navigation }) => {
   const { book } = route.params; // Receive the entire book object
   const [bookDetails, setBookDetails] = useState(null);
   const [content, setContent] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(""); // State to hold error message
 
   useEffect(() => {
     const fetchBookDetails = async () => {
@@ -24,11 +25,12 @@ const BookDetail = ({ route, navigation }) => {
             description: response.data.description,
           };
           setContent(fetchedContent);
+          setErrorMessage(""); // Clear error if data is found
         } else {
-          console.error("No data found in response");
+          setErrorMessage("No data found in response"); // Set error message if no data
         }
       } catch (error) {
-        console.error("Error fetching book details:", error);
+        setErrorMessage("No Content Available"); // Set error message on API error
       }
     };
 
@@ -49,7 +51,7 @@ const BookDetail = ({ route, navigation }) => {
     if (bookDetails && bookDetails.content_id) {
       navigation.navigate('PreviewDisplay', { content_id: bookDetails.content_id });
     } else {
-      console.error('content_id is not available');
+      setErrorMessage('No Content Available');
     }
   };
 
@@ -87,7 +89,12 @@ const BookDetail = ({ route, navigation }) => {
         />
         <Text style={styles.bookTitle}>{book.title}</Text>
       </View>
-      {renderBookDescription()}
+
+      {errorMessage ? (
+        <Text style={styles.errorMessage}>{errorMessage}</Text> // Display error message on screen
+      ) : (
+        renderBookDescription()
+      )}
     </LinearGradient>
   );
 };
@@ -109,20 +116,17 @@ const styles = StyleSheet.create({
     // Adjust if needed
   },
   bookTitle: {
-    // ...FONTS.h2,
     fontSize: 20,
     color: COLORS.black, // Updated color to match theme
     fontWeight: 'bold',
     textAlign: 'center',
     fontFamily: 'PlayfairDisplay-Bold',
-  
   },
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
   },
   descriptionTitle: {
-    // ...FONTS.h2,
     fontSize: 20,
     color: COLORS.black, // Updated color to match theme
     marginBottom: 10,
@@ -130,11 +134,9 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   descriptionText: {
-    // ...FONTS.body3,
     fontSize: 14,
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black, // Updated color to match theme
-    // marginBottom: SIZES.padding,
     lineHeight: 24,
   },
   previewButton: {
@@ -147,8 +149,13 @@ const styles = StyleSheet.create({
   },
   previewButtonText: {
     color: COLORS.white, // Ensure text is white for contrast
-    ...FONTS.body2,
     fontFamily: 'PlayfairDisplay-Bold',
+  },
+  errorMessage: {
+    color: COLORS.red, // Style the error message as needed
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

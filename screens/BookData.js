@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     left: 10,
-    fontSize: 25,
+    fontSize: 22,
     color: 'white', // White text
     backgroundColor: 'rgba(110, 120, 120, 0.5)', // Semi-transparent black background
     padding: 15,

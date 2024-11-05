@@ -25,6 +25,7 @@ import ForgotPassword from './screens/ForgotPassword';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import EnterCodeScreen from './screens/EnterCodeScreen';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import OrderSuccessScreen from './screens/OrderSuccessful';
 
 const theme = {
     ...DefaultTheme,
@@ -61,16 +62,21 @@ const CustomDrawerContent = (props) => {
 
     return (
         <DrawerContentScrollView {...props}>
-            <View style={{ alignItems: 'center', marginTop: 40 }}>
-                <Image source={icons.logo2} style={{ width: 110, height: 150 }} />
-            </View>
-            <DrawerItemList {...props} />
-            <View style={styles.logoutContainer}>
-                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <View style={{ alignItems: 'center', marginTop: 40 }}>
+            <Image source={icons.logo2} style={{ width: 110, height: 150 }} />
+        </View>
+        <DrawerItemList {...props} />
+        <View style={styles.logoutContainer}>
+            <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                <View style={styles.logoutContent}>
                     <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
-        </DrawerContentScrollView>
+                    <Image source={icons.logout} style={styles.logoutIcon} /> 
+                </View>
+            </TouchableOpacity>
+        </View>
+    </DrawerContentScrollView>
+    
+    
     );
 };
 
@@ -125,15 +131,6 @@ const DrawerScreens = () => {
                 options={{
                     drawerIcon: ({ focused, color, size }) => (
                         <Image source={icons.claim_icon} style={{ width: 35, height: 35 }} />
-                    ),
-                }}
-            />
-              <Drawer.Screen
-                name="Profile"
-                component={UserProfile}
-                options={{
-                    drawerIcon: ({ focused, color, size }) => (
-                        <Image source={icons.page_icon} style={{ width: 35, height: 35 }} />
                     ),
                 }}
             />
@@ -252,9 +249,10 @@ const App = () => {
               <Stack.Screen name="Signup" component={Register} options={{ headerShown: false }}/>
               <Stack.Screen name="Login" component={LoginForm} options={{ headerShown: false }}/>
               <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }}/>
-              <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }}/>
-              <Stack.Screen name="Reset Password" component={ForgotPasswordScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="Reset Password" component={ForgotPasswordScreen} options={{ headerShown: false }}/>
               <Stack.Screen name="Verification Code" component={EnterCodeScreen} options={{ headerShown: true }}/>
+              <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} options={{ headerShown: false }}/>
+
           </Stack.Navigator>
       </NavigationContainer>
   </StripeProvider>
@@ -262,22 +260,35 @@ const App = () => {
 };
 const styles = StyleSheet.create({
     logoutContainer: {
-   
         padding: 10,
         borderTopWidth: 1,
         borderTopColor: '#ddd',
+        backgroundColor: 'white',
+        marginTop:35
     },
     logoutButton: {
-        paddingVertical: 15,
+        paddingVertical: 5,
         paddingHorizontal: 20,
         backgroundColor: 'black',
         borderRadius: 5,
     },
+    logoutContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    logoutIcon: {
+        width: 60, // Adjust the size of the icon
+        height: 30, // Adjust the size of the icon
+        marginLeft: 10, // Space between the icon and text
+        backgroundColor: 'white',
+    },
     logoutText: {
         color: 'white',
-        fontSize: 16,
+        marginLeft: 50,
+        fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'center',
+        textAlign: 'center', // Adjust font size as needed
     },
 });
+
 export default App;

@@ -28,7 +28,7 @@ const Profile = ({ navigation }) => {
       console.log('Profile:', userProfile.user); // Log the entire profile
       setUsername(userProfile.user.name || '');
       setEmail(userProfile.user.email || '');
-      setIcon(userProfile.user.icon ? `${API_HOST}/storage/profiles/${userProfile.user.icon}` : null);
+      setIcon(userProfile.user.icon ? `${API_HOST}/storage/icons/${userProfile.user.icon}` : null);
     }
   }, [userProfile]);
 
@@ -110,7 +110,9 @@ const Profile = ({ navigation }) => {
 
         if (response.status === 200) {
           console.log('Profile update successful:', response.data);
+          setIcon(userProfile.user.icon ? `${API_HOST}/storage/${userProfile.user.icon}` : null);
           dispatch(setUserProfile(response.data));
+
           ToastAndroid.show('Profile updated successfully!', ToastAndroid.LONG);
         } else {
           console.log('Profile update failed:', response.data);

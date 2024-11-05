@@ -27,8 +27,14 @@ const Login = ({ navigation }) => {
     }).start();
   }, [fadeAnim]);
 
-  const handlePasswordChange = (text) => setPassword(text.trimStart());
-  const handleEmailChange = (text) => setEmail(text.trimStart());
+  const handlePasswordChange = (text) => {
+    setPassword(text.trimStart());
+    if (errorPassword) setErrorPassword(''); // Clear error when typing
+  };
+  const handleEmailChange = (text) => {
+    setEmail(text.trimStart());
+    if (errorEmail) setErrorEmail(''); // Clear error when typing
+  };
   const toggleShowPassword = () => setShowPassword(!showPassword);
 
   const validateForm = () => {

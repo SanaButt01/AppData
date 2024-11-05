@@ -6,7 +6,7 @@ import { FONTS, COLORS, icons } from '../constants';
 import { API_HOST } from '../myenv';
 
 const ShoppingCart = ({ navigation }) => {
-  const localIm = require('../assets/empty.png');
+  const localIm = require('../assets/emptycart.png');
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart); // Update to match combined reducer key
 
@@ -102,7 +102,7 @@ const ShoppingCart = ({ navigation }) => {
         ) : (
           <ImageBackground
             source={localIm}
-            resizeMode='contain'
+            resizeMode='cover'
             style={styles.emptyCartContainer}
           >
             <Text style={styles.emptyCartText}>Oops!! Your cart is empty</Text>
@@ -218,18 +218,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   emptyCartContainer: {
-    backgroundColor: COLORS.white,
+    // backgroundColor: COLORS.white,
     width: '100%',
-    height: 600,
+    height: 400,
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyCartText: {
     textAlign: 'center',
-    fontSize: 40,
+    fontSize: 20,
     fontFamily: 'PlayfairDisplay-Bold',
     color: COLORS.black,
-    marginTop:350
+    marginTop:300
   },
 });
 

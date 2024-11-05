@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, Image, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { icons } from "../constants";
+import { icons,images } from "../constants";
 import axios from 'axios';
 import { API_HOST } from '../myenv';
 const FeedBack= ({ navigation }) => {
@@ -10,10 +10,12 @@ const FeedBack= ({ navigation }) => {
   
   const handleFeedbackChange = (text) => {
     setMessage(text.trimStart());
+    if (error) setError(''); // Clear error message on input
   };
   
   const handleEmailChange = (text) => {
     setEmail(text.trimStart());
+    if (error) setError('');
   };
 const validateEmail = (email) => {
     // Regular expression for email validation
@@ -64,10 +66,11 @@ const handleForm = async () => {
 };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-          source={icons.logo2}
+          source={images.feedback}
           style={styles.logo}
         />
       </View>
@@ -95,7 +98,7 @@ const handleForm = async () => {
           <TextInput
         style={styles.input}
         placeholder="Give Your FeedBack.."
-        placeholderTextColor="black"
+        placeholderTextColor="grey"
         value={message}
         onChangeText={handleFeedbackChange}
         multiline
@@ -109,7 +112,7 @@ const handleForm = async () => {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </View></ScrollView>
   );
 };
 
@@ -123,8 +126,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   logo: {
-    height: 180,
-    width: 130,
+    height: 270,
+    width: 300,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -133,7 +136,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 10,
+    marginBottom: 100,
   },
   inputContainer: {
     flexDirection: 'row',
