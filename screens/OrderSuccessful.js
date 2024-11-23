@@ -16,7 +16,7 @@ const OrderSuccessScreen = () => {
       <Text style={styles.congratsText}>Order Paid Successfully</Text>
       </View> */}
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Dashboard')}>
-          <Text style={styles.buttonText}>Go to Dashboard</Text>
+          <Text style={styles.buttonText}>Continue Shopping</Text>
         </TouchableOpacity>
       </View>
      
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-      marginTop:'100%'
+      marginTop:'70%'
   },
   buttonText: {
     color: 'white',

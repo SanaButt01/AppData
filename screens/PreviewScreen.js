@@ -72,17 +72,17 @@ const PreviewScreen = ({ route }) => {
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    paddingHorizontal: SIZES.padding,
+    // paddingHorizontal: SIZES.padding,
     paddingVertical: SIZES.padding,
   },
   previewContainer: {
-    marginBottom: SIZES.padding,
+    // marginBottom: SIZES.padding,
     alignItems: "center",
   },
   previewImage: {
     width: "100%",
-    height: 300,
-    // marginBottom: 10,
+    height: 500,
+    marginBottom: 10,
   },
   center: {
     flex: 1,

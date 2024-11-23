@@ -105,7 +105,7 @@ const ShoppingCart = ({ navigation }) => {
             resizeMode='cover'
             style={styles.emptyCartContainer}
           >
-            <Text style={styles.emptyCartText}>Oops!! Your cart is empty</Text>
+            {/* <Text style={styles.emptyCartText}>Oops!! Your cart is empty</Text> */}
           </ImageBackground>
         )}
       </ScrollView>

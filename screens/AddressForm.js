@@ -1,56 +1,68 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { CardField, useStripe } from '@stripe/stripe-react-native';
-import { icons } from "../constants"; // Assuming you have icons imported
+import { icons } from "../constants";
 import { useDispatch } from 'react-redux';
-import { clearCart } from '../ACTIONS'; // Ensure the correct import path for clearCart
+import { clearCart } from '../ACTIONS';
 import axios from 'axios';
 import { API_HOST } from '../myenv';
-import { useNavigation } from '@react-navigation/native';
-
 
 const AddressForm = ({ navigation, route }) => {
-  const { cartItems, grandTotal } = route.params; // Extracting params from navigation route
+  const { cartItems, grandTotal } = route.params;
   const [cardDetails, setCardDetails] = useState(null);
   const { confirmPayment } = useStripe();
-  
 
   const [email, setEmail] = useState('');
   const [phone_number, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-  const [error, setError] = useState('');
+  const [errorAddress, setErrorAddress] = useState('');
+  const [errorPhone, setErrorPhone] = useState('');
+  const [cardError, setCardError] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
+  const [error, setError] = useState(''); // Added error state for general errors
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  const dispatch = useDispatch(); // Initialize dispatch
+  const dispatch = useDispatch();
 
-  const handlePhoneNumberChange = (text) => {
-    setPhoneNumber(text.trimStart());
-  };
+  const handlePhoneNumberChange = (text) => setPhoneNumber(text.trimStart());
+  const handleAddressChange = (text) => setAddress(text.trimStart());
+  const handleEmailChange = (text) => setEmail(text.trim());
 
-  const handleAddressChange = (text) => {
-    setAddress(text.trimStart());
-  };
-
-  const handleEmailChange = (text) => {
-    setEmail(text.trim());
-  };
-
-  const validatePhoneNumber = (phone_number) => {
-    const regex = /^[0-9]{11}$/;
-    return regex.test(phone_number);
-  };
+  const validatePhoneNumber = (phone_number) => /^[0-9]{11}$/.test(phone_number);
+  const validateEmail = (email) => /\S+@gmail\.com/.test(email);
 
   const validateForm = () => {
-    if (!email.trim() || !phone_number.trim() || !address.trim()) {
-      setError('All fields must be filled.');
-      return false;
-    } else if (!validatePhoneNumber(phone_number)) {
-      setError('Please enter a valid phone number (11 digits).');
-      return false;
-    }
-    return true;
-  };
+    let valid = true;
+    setErrorAddress('');
+    setErrorPhone('');
+    setErrorEmail('');
 
+    if (!email.trim()) {
+      setErrorEmail('Please enter your email.');
+      valid = false;
+    } else if (!validateEmail(email)) {
+      setErrorEmail('Please enter a valid Gmail address.');
+      valid = false;
+    }
+
+    if (!phone_number.trim()) {
+      setErrorPhone('Please enter your phone number.');
+      valid = false;
+    } else if (!validatePhoneNumber(phone_number)) {
+      setErrorPhone('Please enter a valid phone number (11 digits).');
+      valid = false;
+    }
+
+    if (!address.trim()) {
+      setErrorAddress('Please enter your address.');
+      valid = false;
+    }
+    if (!cardDetails?.complete) {
+      setCardError('Please fill out the card details');
+      return;
+    }
+    return valid;
+  };
   const handlePayment = async () => {
     if (validateForm()) {
       if (!cardDetails?.complete) {
@@ -132,8 +144,6 @@ const AddressForm = ({ navigation, route }) => {
     }
   };
   
-  
-
 
   return (
     <View style={styles.container}>
@@ -144,14 +154,8 @@ const AddressForm = ({ navigation, route }) => {
         </View>
       ))}
       <Text style={styles.sectionTitle}>Total Price: Rs.{grandTotal}</Text>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboardAvoidingView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboardAvoidingView}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -163,7 +167,9 @@ const AddressForm = ({ navigation, route }) => {
               autoCapitalize="none"
             />
             <Image source={icons.email2} style={styles.email} />
-          </View>
+            </View>
+            {errorEmail && <Text style={styles.errorText}>{errorEmail}</Text>}
+          
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -175,8 +181,9 @@ const AddressForm = ({ navigation, route }) => {
               keyboardType="phone-pad"
             />
             <Image source={icons.phn} style={styles.email} />
+            
           </View>
-
+          {errorPhone && <Text style={styles.errorText}>{errorPhone}</Text>}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -186,11 +193,13 @@ const AddressForm = ({ navigation, route }) => {
               value={address}
             />
             <Image source={icons.loc} style={styles.email} />
+          
           </View>
+          {errorAddress && <Text style={styles.errorText}>{errorAddress}</Text>}
           <CardField
             postalCodeEnabled={false}
             placeholders={{
-              number: '4242 4242 4242 4242',
+              number: '1234 1234 1234 1234',
               expiration: 'MM/YY',
               cvc: 'CVC',
             }}
@@ -206,14 +215,13 @@ const AddressForm = ({ navigation, route }) => {
             onCardChange={(cardDetails) => setCardDetails(cardDetails)}
           />
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+{cardError && <Text style={styles.errorText}>{cardError}</Text>}
 
           <TouchableOpacity style={styles.button} onPress={handlePayment}>
             <Text style={styles.buttonText}>Pay</Text>
           </TouchableOpacity>
-          {paymentSuccess && (
-            <Text style={styles.successMessage}>Order paid successfully!</Text>
-          )}
+
+          {paymentSuccess && <Text style={styles.successMessage}>Order paid successfully!</Text>}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
