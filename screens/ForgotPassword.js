@@ -64,8 +64,8 @@ const ForgotPassword = ({ route, navigation }) => {
         navigation.navigate('Login');
       })
       .catch(error => {
-        console.error(error);
-        Alert.alert('Error', 'Failed to reset password. Please try again.');
+        // console.error(error);
+        Alert.alert('Error', 'Email does not exist in our records. Please check and try again.');
       });
   };
 

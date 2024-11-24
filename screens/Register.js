@@ -20,6 +20,7 @@ const Register = ({ navigation }) => {
   const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
   const [errorIcon, setErrorIcon] = useState('');
+  const [message, setMessage] = useState(''); // State for displaying messages
   const handleNameChange = (text) => {
     setUsername(text.trimStart());
     if (errorUsername) setErrorUsername(''); // Clear error when typing
@@ -74,8 +75,12 @@ const Register = ({ navigation }) => {
     if (!name.trim()) {
       setErrorUsername('Please enter your username.');
       valid = false;
+    } else if (!validateName(name)) {
+      setErrorUsername('Username must start with a letter and contain only letters or numbers.');
+      valid = false;
+    } else {
+      setErrorUsername(''); // Clear any previous error
     }
-
     if (!email.trim()) {
       setErrorEmail('Please enter your email.');
       valid = false;
@@ -111,7 +116,9 @@ const Register = ({ navigation }) => {
     return valid;
   };
 
-  const validateEmail = (email) => /\S+@gmail\.com/.test(email);
+  const validateEmail = (email) => /^[a-zA-Z][a-zA-Z0-9]*@gmail\.com$/.test(email);
+  const validateName = (name) => /^[a-zA-Z][a-zA-Z0-9_]*$/.test(name) && /[a-zA-Z]/.test(name);
+
 
   const handleSign = async () => {
     if (validateForm()) {
@@ -137,17 +144,23 @@ const Register = ({ navigation }) => {
         });
 
         if (response.status === 201) {
-          console.log('Registration successful:', response.data);
+          setMessage('Registration successful! Now you can login.');
           ToastAndroid.show('Registration successful! Now you can login.', ToastAndroid.LONG);
           navigation.navigate('Login');
         } else {
-          console.log('Registration failed:', response.data);
-          // Handle registration failure (e.g., display error message)
+          setMessage('Registration failed. Please try again.');
         }
       } catch (error) {
-        console.error('Error registering user:', error.response ? error.response.data : error.message);
-        // Handle network error or other exceptions
+        ToastAndroid.show(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : 'An error occurred. Please try again.',
+          ToastAndroid.SHORT
+        );
+      
       }
+    } else {
+      ToastAndroid.show('Registration failed. Please try again.', ToastAndroid.LONG);
     }
   };
 

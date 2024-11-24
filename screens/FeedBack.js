@@ -19,7 +19,7 @@ const FeedBack= ({ navigation }) => {
   };
 const validateEmail = (email) => {
     // Regular expression for email validation
-    const regex = /\S+@gmail\.com/;
+    const regex = /^[a-zA-Z][a-zA-Z0-9]*@gmail\.com$/;
     return regex.test(email);
   };
   const validateForm = () => {

@@ -170,31 +170,33 @@ const App = () => {
     const [initialRouteName, setInitialRouteName] = useState(null);
 
     // Flag to check if we're in development mode
-    const isDevelopment = true; // Static flag for testing
-
+    const isDevelopment = true; // Static flag for development mode
+    const isPresentationMode = false; // Flag for forcing MyCars during presentation
+    
     useEffect(() => {
         const checkAppState = async () => {
             try {
-                // Check if we're in development mode
+                if (isPresentationMode) {
+                    console.log('Presentation Mode: Forcing initialRouteName to MyCars');
+                    setInitialRouteName('MyCars');
+                    return; // Skip other logic
+                }
+    
+                // Regular app state logic
                 const devLaunchFlag = await AsyncStorage.getItem('devLaunch');
                 console.log('Development Mode:', isDevelopment);
                 console.log('Dev Launch Flag:', devLaunchFlag);
-
+    
                 if (isDevelopment) {
                     if (devLaunchFlag === null) {
-                        // First time launching with 'npx react-native run-android'
-                        console.log('Setting initialRouteName to MyCars');
+                        console.log('First Dev Launch - Setting initialRouteName to MyCars');
                         setInitialRouteName('MyCars');
-                        // Set a flag to indicate MyCars has been shown
                         await AsyncStorage.setItem('devLaunch', 'true');
                     } else {
-                        // If the flag is set, show the regular initial route that point
-                        // await AsyncStorage.removeItem('devLaunch');
-
-                        console.log('Dev Launch Flag is set, checking login status');
+                        console.log('Checking regular flow for development mode');
                         const firstLaunchFlag = await AsyncStorage.getItem('isFirstLaunch');
                         const loggedInStatus = await AsyncStorage.getItem('isLoggedIn');
-
+    
                         if (firstLaunchFlag === null) {
                             console.log('First Launch - Setting initialRouteName to MyCars');
                             await AsyncStorage.setItem('isFirstLaunch', 'false');
@@ -205,10 +207,10 @@ const App = () => {
                         }
                     }
                 } else {
-                    // Not in development mode, handle regular launch
+                    // Production logic
                     const firstLaunchFlag = await AsyncStorage.getItem('isFirstLaunch');
                     const loggedInStatus = await AsyncStorage.getItem('isLoggedIn');
-
+    
                     if (firstLaunchFlag === null) {
                         console.log('First Launch - Setting initialRouteName to MyCars');
                         await AsyncStorage.setItem('isFirstLaunch', 'false');
@@ -218,15 +220,16 @@ const App = () => {
                         setInitialRouteName(loggedInStatus === 'true' ? 'DrawerScreens' : 'Login');
                     }
                 }
-
+    
+                // Hide splash screen after logic
                 SplashScreen.hide();
             } catch (error) {
                 console.error('Failed to check app state', error);
             }
         };
-
+    
         checkAppState();
-    }, [isDevelopment]);
+    }, [isDevelopment, isPresentationMode]);
 
     if (initialRouteName === null) {
         return null; // Or a loading spinner

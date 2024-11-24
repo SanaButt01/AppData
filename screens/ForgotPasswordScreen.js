@@ -11,7 +11,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   const handleSendLink = () => {
     const trimmedEmail = email.trim();
-    
     // Validate email
     if (trimmedEmail === '') {
       setErrorMessage('Email cannot be empty');
@@ -29,6 +28,12 @@ const ForgotPasswordScreen = ({ navigation }) => {
       return;
     }
 
+
+    if (!/^[a-zA-Z][a-zA-Z0-9_]*@gmail\.com$/.test(trimmedEmail)) {
+      setErrorMessage('Please enter a valid email address (e.g., example@gmail.com)');
+      return false;
+    }
+
     setErrorMessage(''); // Clear error message if input is valid
     axios.post(API_HOST + '/api/password-reset/request-code', { email: trimmedEmail }) // Use trimmed email for the request
       .then(response => {
@@ -36,9 +41,11 @@ const ForgotPasswordScreen = ({ navigation }) => {
         navigation.navigate('Verification Code', { email: trimmedEmail });
       })
       .catch(error => {
-        console.error(error);
-        setErrorMessage(error.message || 'An error occurred');
+        const errorMsg = error.response?.data?.message || 'An error occurred';
+        setErrorMessage(errorMsg); // Set the error message in state
+        ToastAndroid.show(errorMsg, ToastAndroid.LONG); // Display the error as a toast notification
       });
+      
   };
 
   useEffect(() => {

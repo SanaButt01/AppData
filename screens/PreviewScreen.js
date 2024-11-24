@@ -27,7 +27,8 @@ const PreviewScreen = ({ route }) => {
         console.log(`Rate limit exceeded. Retrying in ${retryAfter / 1000} seconds...`);
         setTimeout(() => fetchBookDetails(retryCount + 1), retryAfter);
       } else {
-        console.error("Error fetching preview:", error);
+        const errorMsg = "Error fetching preview: " + (error.message || 'An unexpected error occurred');
+        ToastAndroid.show(errorMsg, ToastAndroid.LONG);
       }
     }
   };

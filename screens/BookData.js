@@ -46,8 +46,10 @@ const SidePanel = () => {
         setCategories(filteredCategories);
       })
       .catch(error => {
-        console.error('Error fetching categories:', error);
+        const errorMsg = 'Error fetching categories: ' + (error.message || 'An unexpected error occurred');
+        ToastAndroid.show(errorMsg, ToastAndroid.LONG); // Display the error as a toast notification
       });
+      
   };
 
   const handleCategoryClick = (categoryId) => {

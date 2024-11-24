@@ -29,7 +29,8 @@ const AddressForm = ({ navigation, route }) => {
   const handleEmailChange = (text) => setEmail(text.trim());
 
   const validatePhoneNumber = (phone_number) => /^[0-9]{11}$/.test(phone_number);
-  const validateEmail = (email) => /\S+@gmail\.com/.test(email);
+  const validateEmail = (email) => /^[a-zA-Z][a-zA-Z0-9]*@gmail\.com$/.test(email);
+
 
   const validateForm = () => {
     let valid = true;
