@@ -50,8 +50,8 @@ const BookScreen = ({ route }) => {
 
   useEffect(() => {
     // Simulate fetching books based on the selected category ID
-    const filteredBooks = booksData.filter(book => book.category_id === categoryId);
-    setBooks(filteredBooks);
+    // const filteredBooks = booksData.filter(book => book.category_id === categoryId);
+    // setBooks(filteredBooks);
     
     // Replace the hardcoded booksData with API call below:
     axios.get(`${API_HOST}/api/books`, {

@@ -107,10 +107,10 @@ const Register = ({ navigation }) => {
       setErrorConfirmPassword('Passwords do not match.');
       valid = false;
     }
-    if (!icon) { // Check if profile photo is not selected
-      setErrorIcon('Please select a profile photo.');
-      valid = false;
-    }
+    // if (!icon) { // Check if profile photo is not selected
+    //   setErrorIcon('Please select a profile photo.');
+    //   valid = false;
+    // }
 
 
     return valid;

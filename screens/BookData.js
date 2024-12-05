@@ -22,7 +22,7 @@ const SidePanel = () => {
   const [messageIndex, setMessageIndex] = useState(0);
 
   // Example user data, replace this with real data
-  const [user, setUser] = useState({ name: 'Slex Johnson', email: 'alex@example.com' });
+  // const [user, setUser] = useState({ name: 'Slex Johnson', email: 'alex@example.com' });
 
   useEffect(() => {
     fetchCategories();
@@ -62,7 +62,7 @@ const SidePanel = () => {
   };
 
   // Extract the first letter of the user's name
-  const userInitial = user.name ? user.name.charAt(0).toUpperCase() : '';
+  // const userInitial = user.name ? user.name.charAt(0).toUpperCase() : '';
 
   return (
     <SafeAreaView style={styles.container}>
